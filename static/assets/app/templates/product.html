@@ -1,0 +1,148 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>PRODUCT
+      <i ng-click="startlist()" class="entypo-list"></i>
+      <i ng-click="startcard()" class="entypo-vcard"></i>
+    </h2>
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-6">
+    <h4>Total Product: {{products.length}}
+          <span ng-if="!showinactive" class="btn-link" ng-click="clickshowinactive()">
+            <small>(inactive products: {{products.length-activenumber}} /
+            </small>
+          </span>
+          <span ng-if="showinactive" class="btn-link" ng-click="clickshowinactive()">
+            <small class="text-danger">(hide inactive products /
+            </small>
+          </span>
+          <span ng-if="!showoutstock" class="btn-link" ng-click="clickshowoutstock()">
+            <small>nearly out of stock: {{products.length-activenumber}})
+            </small>
+          </span>
+          <span ng-if="showoutstock" class="btn-link" ng-click="clickshowoutstock()">
+            <small>show all products)
+            </small>
+          </span>
+    </h4>
+  </div>
+  <div class="col-md-3 col-md-offset-3">
+    <input ng-model="searchtext" type="text" class="form-control" placeholder="Search Product">
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-2">
+    <a href="#/product-new" class="btn btn-green btn-icon btn-large">
+          Add New Product
+      <i class="entypo-plus"></i>   
+    </a>
+  </div>
+  <div class="col-md-6">
+    <label>Tags: </label>
+    <div class="btn-group">
+            <label ng-repeat='tag in tags' ng-click="selectedtag(tag.id)" ng-class="{'btn btn-green':tag.checked, 'btn btn-white':!tag.checked}">
+               {{tag.name}}
+            </label>
+    </div>
+  </div>
+  <div class="form-inline col-md-4 text-right">
+    <label>Sort by: </label>
+   <select ng-init="ordercritia=orderbyoptions[0]" ng-model="ordercritia" ng-options="o.name for o in orderbyoptions" class="form-control">
+   </select>
+  </div>
+</div>
+<br/>
+<div>
+  <div id="cards" class=" gallery-env" ng-if="cardview" masonry>
+    <div class="row">
+      <div class="col-md-3 col-sm-6 masonry-brick" ng-repeat="p in products | filter:searchtext | filter:tagfilter | filter:activefilter | filter:outstockfilter | orderBy:ordercritia.orderBy">
+        <article class="album">
+          <header>
+            <a ng-href="#/product/{{p.id}}">
+              <img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" imageonload/>
+            </a>
+          </header>
+          <section class="album-info">
+                <h4>
+                    <strong>{{p.name}}
+                      <a ng-if="p.pid!=''">({{p.pid}})</a>
+                    <strong>
+                </h4>
+                <p>Tags:&nbsp;
+                  <span ng-repeat="t in p.tag">
+                    <span ng-click="selectedtag(t.id)">{{t.name}}</span>
+                    &nbsp;
+                  </span>
+                </p>
+          </section>
+          <footer>
+            <div class="album-images-count" style="{color:#FFFFFF}">
+              <i class="entypo-doc-text"></i>
+              <span class="badge" ng-class="{'badge-danger':p.inventory_free<=p.min_qty, 'badge-success':p.inventory_free>p.min_qty}">{{p.inventory_free}}</span>
+            </div>
+            <div class="album-images-count" style="{color:#FFFFFF}">
+              <p class="pull-right" style="font-size: 15px">
+                  <strong>
+                  &nbsp;&nbsp;&nbsp;&nbsp;{{p.belong_to.default_currency.symbol}}{{p.rrp}}
+                  </strong>
+              </p>  
+            </div>
+            <div class="album-options" style="{color:#FFFFFF}">
+                
+                <a ng-click="deleteproduct(p)" ng-if="isAdmin||isMgr">
+                  <i class="entypo-trash"></i>
+                </a>
+              </div>
+              
+          </footer>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered datatable" ng-if="listview">
+    <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>R.R.P.({{currentuser.belong_to.default_currency.name}})</th>
+            <th>Free Inventory</th>
+            <th>Active Status</th>
+            <th>Actions</th>
+          </tr>
+    </thead>
+    
+    <tbody>
+      <tr ng-repeat="p in products | filter:searchtext | filter:tagfilter | filter:activefilter | filter:outstockfilter | orderBy:ordercritia.orderBy">
+        <td>{{p.name}}</td>
+        <td>{{p.pid}}</td>
+        <td>{{p.rrp}}</td>
+        <td>{{p.inventory_free}}</td>
+        <td>{{p.inventory_status.name}}</td>
+        <td>
+          <a ng-click="view(employee)" class="btn btn-default btn-sm btn-icon icon-left">
+            <i class="entypo-pencil"></i>
+            Edit
+          </a>
+          
+          <a ng-click="delEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="employee.is_active">
+            <i class="entypo-cancel"></i>
+            Deactivate
+          </a>
+          <a ng-click="actEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="!employee.is_active">
+            <i class="entypo-cancel"></i>
+            Activate
+          </a>
+          
+          <a ng-click="view(employee)" class="btn btn-info btn-sm btn-icon icon-left">
+            <i class="entypo-info"></i>
+            Profile
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

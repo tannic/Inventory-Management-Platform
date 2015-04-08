@@ -1,0 +1,368 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>EMPLOYEE
+      <i ng-click="startlist()" class="entypo-list"></i>
+      <i ng-click="startcard()" class="entypo-vcard"></i>
+    </h2>
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-6">
+    <h4>Total employee: {{employees.length}} 
+          <span ng-if="!showinactive" class="btn-link" ng-click="clickshowinactive()">
+            <small>(including {{employees.length-activenumber}} inactive employees)
+            </small>
+          </span>
+          <span ng-if="showinactive" class="btn-link" ng-click="clickshowinactive()">
+            <small class="text-danger">(hide inactive employees)
+            </small>
+          </span>
+    </h4>
+  </div>
+  <div class="col-md-6">
+    <input ng-model="searchtext" type="text" class="form-control" placeholder="Search Employee">
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-4">
+    <p ng-click="open()" class="btn btn-green btn-icon btn-large" ng-if="isAdmin||isMgr">
+          Add New Employee
+      <i class="entypo-user-add"></i>   
+    </p>
+  </div>
+  <div class="text-center col-md-8">
+    <div class="btn-group">
+            <label ng-repeat='role in roles' ng-click="selectrole(role.id)" ng-class="{'btn btn-green':role.checked, 'btn btn-white':!role.checked}">
+               {{role.description}}
+            </label>
+    </div>
+  </div>
+</div>
+<br/>
+<div>
+  <div id="cards" class=" row draggable-portlets" masonry>
+      <div class='col-md-3 col-sm-4 col-xs-12 masonry-brick' ng-repeat='employee in employees | filter: searchtext | filter: filterrole | filter: filteractive' ng-if="cardview">
+          <div ng-class="{'panel panel-success':employee.is_active, 'panel panel-default':!employee.is_active}">
+            
+            <div class="panel-heading">          
+              <div class="panel-title">
+                {{employee.employee_role.description}}
+              </div>
+              <div class="panel-options">
+                <a data-rel="collapse"><i class="entypo-down-open"></i></a>
+                <a data-rel="reload"><i class="entypo-arrows-ccw"></i></a>
+              </div>     
+            </div>
+
+            <div class="panel-body">
+              <h4 class="text-center">{{employee.username}}</h4>
+              <br/>     
+              <p><i class="entypo-user"></i>{{employee.first_name}} {{employee.last_name}}</p>
+
+              <p><i class="entypo-mail"></i>{{employee.email}}</p>
+
+              <p><i class="entypo-phone"></i>{{employee.phone}}</p>          
+              <br/>
+              <br/>
+              <div class="text-center">
+                <button type="button" class='btn btn-default' ng-click="view(employee)" ng-disabled="!employee.is_active" ng-if="isAdmin||isMgr">
+                  <i class="entypo-pencil"></i>
+                  View/Edit</button>
+                <button type="button" class='btn btn-gold' ng-if="employee.is_active&&(isAdmin||isMgr)" ng-click="delEmployee(employee.id)">
+                  <i class="entypo-trash"></i>
+                  Deactivate</button>
+                <button type="button" class='btn btn-success' ng-if="!employee.is_active&&(isAdmin||isMgr)" ng-click="actEmployee(employee.id)">
+                  <i class="entypo-plus-circle"></i>
+                  Activate</button>
+              </div>
+            </div>
+        </div>
+    </div>
+  </div>
+      
+  <table class="table table-bordered datatable" ng-if="listview">
+    <thead>
+          <tr>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Full Name</th>
+            <th>Role</th>
+            <th>Active Status</th>
+            <th>Actions</th>
+          </tr>
+    </thead>
+    
+    <tbody>
+      <tr ng-repeat='employee in employees | filter: searchtext | filter: filterrole | filter: filteractive'>
+        <td>{{employee.username}}</td>
+        <td>{{employee.email}}</td>
+        <td>{{employee.first_name}} {{employee.last_name}}</td>
+        <td>{{employee.employee_role.description}}</td>
+        <td>{{employee.is_active}}</td>
+        <td>
+          <a ng-click="view(employee)" class="btn btn-default btn-sm btn-icon icon-left">
+            <i class="entypo-pencil"></i>
+            Edit
+          </a>
+          
+          <a ng-click="delEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="employee.is_active&&(isAdmin||isMgr)">
+            <i class="entypo-cancel"></i>
+            Deactivate
+          </a>
+          <a ng-click="actEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="!employee.is_active&&(isAdmin||isMgr)">
+            <i class="entypo-cancel"></i>
+            Activate
+          </a>
+          
+          <a ng-click="view(employee)" class="btn btn-info btn-sm btn-icon icon-left">
+            <i class="entypo-info"></i>
+            Profile
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<script type="text/ng-template" id="newemployee.html">
+        
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">New Employee</h4>
+        </div>
+        
+        <div class="modal-body">
+        <form name="employeeCreateForm" class="form-wizard validate">
+          <div class="row">
+            <div class="col-md-6">
+              
+              <div class="form-group" ng-class="{ 'has-error' : usernamevalid||employeeCreateForm.username.$invalid && !employeeCreateForm.username.$pristine }">
+                <label class="control-label">Username</label>
+                
+                <input name="username" ng-model="newemployee.username" type="text" class="form-control" placeholder="No less than 5 letters" ng-minlength="5" required>
+                <p ng-show="employeeCreateForm.username.$error.minlength" class="text-danger">Username is too short.</p>
+                <p ng-show="employeeCreateForm.username.$error.required && !employeeCreateForm.username.$pristine" class="text-danger">You name is required.</p>
+                <p ng-show="usernamevalid" class='text-danger'>This username has been taken!</p>
+              </div> 
+            </div>
+
+            <div class="col-md-6">
+              <div class="form-group">
+                <label class="control-label">Role</label>
+                
+                <select ng-model="newemployee.employee_role" ng-options="r.description for r in roles" class="form-control">
+                </select>
+              </div>  
+            </div> 
+              
+          </div>
+            
+          <div class='row'>
+            <div class="col-md-6">              
+              <div class="form-group" ng-class="{ 'has-error' : emailvalid||employeeCreateForm.email.$invalid && !employeeCreateForm.email.$pristine }">
+                <label class="control-label">Email Address</label>
+                
+                <input name="email" ng-model="newemployee.email" type="email" class="form-control" placeholder="Emal Address" required>
+                <p ng-show="employeeCreateForm.email.$invalid && !employeeCreateForm.email.$pristine" class="text-danger">Enter a valid email.</p>
+                <p ng-show="emailvalid" class='text-danger'>This email address has been taken!</p>
+              </div>  
+            </div>
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Phone Number</label>
+                
+                <input ng-model="newemployee.phone" type="text" class="form-control" placeholder="Optional">
+              </div>  
+              
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">First Name</label>
+                
+                <input ng-model="newemployee.first_name" type="text" class="form-control" placeholder="Optional">
+              </div>  
+              
+            </div>
+            
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Last Name</label>
+                
+                <input ng-model="newemployee.last_name" type="text" class="form-control" placeholder="Optional">
+              </div>  
+            
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Password</label>
+                
+                <input id="password1" name="password1" ng-model="newemployee.password" type="password" class="form-control" placeholder="password" required>
+              </div>  
+              
+            </div>
+            
+            <div class="col-md-6">
+              
+              <div class="form-group" ng-class="{ 'has-error' : newemployee.password!=pw2 }">
+                <label class="control-label">Confirm Password</label>
+                
+                <input id="password2" name='password2' type="password" class="form-control" placeholder="repeat password" ng-model="pw2" required>
+                <p ng-show="newemployee.password!=pw2" class="text-danger">Password Mismatch!</p>
+              </div>  
+            
+            </div>
+          </div>
+        
+        </form>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+          <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newemployee.password!=pw2">Add new employee</button>
+        </div>
+</script>
+<script type="text/ng-template" id="viewemployee.html">
+        
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">View/Edit {{newemployee.username}} Info</h4>
+        </div>
+        
+        <div class="modal-body">
+        <form name="employeeCreateForm" class="form-wizard validate">
+          <div class="row">
+            <div class="col-md-6">
+              
+              <div class="form-group" ng-class="{ 'has-error' : usernamevalid||employeeCreateForm.username.$invalid && !employeeCreateForm.username.$pristine }">
+                <label class="control-label">Username</label>
+                
+                <input ng-dblclick="edit()" name="username" ng-model="newemployee.username" type="text" class="form-control" placeholder="No less than 5 letters" ng-minlength="5" required ng-readonly="!editable">
+                <p ng-show="employeeCreateForm.username.$error.minlength" class="text-danger">Username is too short.</p>
+                <p ng-show="employeeCreateForm.username.$error.required && !employeeCreateForm.username.$pristine" class="text-danger">You name is required.</p>
+                <p ng-show="usernamevalid" class='text-danger'>This username has been taken!</p>
+              </div> 
+            </div>
+
+            <div class="col-md-6" ng-if="editable&&rolechange">
+              <div class="form-group">
+                <label class="control-label">Role</label>
+                
+                <select ng-model="newemployee.employee_role" ng-options="r.description for r in roles" class="form-control">
+                </select>
+              </div>  
+            </div>
+            <div class="col-md-6" ng-if="!editable||!rolechange">
+              <div class="form-group">
+                <label class="control-label">Role</label>
+                
+                <p class="form-control">
+                  {{newemployee.employee_role.description}}
+                </p>
+              </div>  
+            </div> 
+              
+          </div>
+            
+          <div class='row'>
+            <div class="col-md-6">              
+              <div class="form-group" ng-class="{ 'has-error' : emailvalid||employeeCreateForm.email.$invalid && !employeeCreateForm.email.$pristine }">
+                <label class="control-label">Email Address</label>
+                
+                <input ng-dblclick="edit()" name="email" ng-model="newemployee.email" type="email" class="form-control" placeholder="Emal Address" ng-readonly="!editable" required>
+                <p ng-show="employeeCreateForm.email.$invalid && !employeeCreateForm.email.$pristine" class="text-danger">Enter a valid email.</p>
+                <p ng-show="emailvalid" class='text-danger'>This email address has been taken!</p>
+              </div>  
+            </div>
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Phone Number</label>
+                
+                <input ng-dblclick="edit()" ng-model="newemployee.phone" type="text" class="form-control" placeholder="Optional" ng-readonly="!editable">
+              </div>  
+              
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">First Name</label>
+                
+                <input ng-dblclick="edit()" ng-model="newemployee.first_name" type="text" class="form-control" placeholder="Optional" ng-readonly="!editable">
+              </div>  
+              
+            </div>
+            
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Last Name</label>
+                
+                <input ng-dblclick="edit()" ng-model="newemployee.last_name" type="text" class="form-control" placeholder="Optional" ng-readonly="!editable">
+              </div>  
+            
+            </div>
+          </div>
+          <div class="row" ng-if="changepwd">
+            <div class="col-md-6">
+              
+              <div class="form-group">
+                <label class="control-label">Password</label>
+                
+                <input id="password1" name="password1" ng-model="newemployee.password" type="password" class="form-control" placeholder="password" required>
+              </div>  
+              
+            </div>
+            
+            <div class="col-md-6">
+              
+              <div class="form-group" ng-class="{ 'has-error' : newemployee.password!=pw2 }">
+                <label class="control-label">Confirm Password</label>
+                
+                <input id="password2" name='password2' type="password" class="form-control" placeholder="repeat password" ng-model="pw2" required>
+                <p ng-show="newemployee.password!=pw2" class="text-danger">Password Mismatch!</p>
+              </div>  
+            
+            </div>
+          </div>
+          <div class="row">
+           <div class="col-md-6" ng-if="!editable">
+              <div class="form-group">
+                <label class="control-label">Date Joined</label>
+                
+                <p class="form-control">
+                  {{newemployee.date_joined}}
+                </p>
+              </div>  
+            </div> 
+            <div class="col-md-6" ng-if="!editable">
+              <div class="form-group">
+                <label class="control-label">Last Login</label>
+                
+                <p class="form-control">
+                  {{newemployee.last_login}}
+                </p>
+              </div>  
+            </div> 
+          </div>
+        
+        </form>
+        <button type="button" class="btn btn-default" ng-click="chgpwd()" ng-disabled="changepwd">Reset Password</button>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+          <button type="button" class="btn btn-green" ng-click="edit()" ng-disabled="editable">Edit</button>
+          <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newemployee.password!=pw2">Save</button>
+        </div>
+</script>

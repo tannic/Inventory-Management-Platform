@@ -1,0 +1,421 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>CUSTOMER
+    </h2>
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-2 col-sm-4">
+    <a ng-click="newcustomer()" class="btn btn-green btn-icon btn-block btn-large">
+          New Customer
+      <i class="entypo-plus"></i>   
+    </a>
+  </div>
+  <div class="col-md-6 col-sm-4">
+    <input ng-model="searchtext" type="text" class="form-control" placeholder="Search Customers">
+  </div>
+  <div class="form-inline col-md-4 col-sm-4">
+    <label>Sort by: </label>
+   <select ng-model="ordercritia" ng-options="o.name for o in orderbyoptions" class="form-control">
+   </select>
+  </div>
+</div>
+ <hr/>
+ <br/>
+ <div>
+  <div id="cards" class=" row draggable-portlets" masonry>
+      <div class='col-md-3 col-sm-4 col-xs-12 masonry-brick' ng-repeat='c in companys | filter:searchtext | filter:ownersupplierfilter | orderBy:ordercritia.orderBy'>
+          <div class="panel panel-info">          
+            <div class="panel-heading">          
+              <div class="panel-title">
+                {{c.name}}
+              </div>
+              <div class="panel-options">
+                <a data-rel="reload"><i class="entypo-arrows-ccw"></i></a>
+              </div>     
+            </div>
+
+              <ul class="list-group">
+  	            <li class="list-group-item">
+  	           	 <ul class="list-group"> 
+  	           	 	<strong>Basic Information</strong> 
+  	           	 	<br/>
+  	           	 	<li class="list-group-item"> 
+  			            <p>Email: {{c.email}}</p>
+
+  			            <p>Phone: {{c.phone}}</p>          
+  			            <p>Credit: {{c.credit_currency.symbol}}{{c.credit_amount}}</p>
+  			            <p>Sales Channel: {{c.sales_channel.channel_name}}</p>
+  			            <p ng-if="c.registration_no">Registration No.: {{c.registration_no}}</p>
+  			            <p ng-if="c.vat_no">VAT No.: {{c.vat_no}}</p>
+  			            
+  			        </li>
+  			        <a ng-click="customeredit(c)" class="btn btn-white btn-block">Edit</a>
+  		       	 </ul>
+  	            
+  		        </li>
+  	            <li class="list-group-item">
+  	            	<ul class="list-group">
+  	            		<strong>Address</strong>
+  	            		<p class="list-group-item-text">
+  	            			<p class="text center" ng-if="c.address.length==0">No address found.</p>
+  	            		</p>
+  	            		<li class="list-group-item" ng-repeat="a in c.address">
+  	            			<span class="badge badge-info" ng-if="a.is_default">Default Address</span>
+  	            			<p>{{a.first_line}}</p>
+  	            			<p>{{a.second_line}}</p>
+  	            			<p>{{a.city}}  {{a.zipcode}}</p>
+  	            			<p>{{a.country.name}}</p>
+                      <div class="row">
+                        <div class="col-xs-6">
+  	            			    <a ng-click="addressedit(a,c)" class="btn btn-white btn-block">Edit</a>
+                        </div>
+                        <div class="col-xs-6">
+                          <a ng-click="addressdel(a,c)" class="btn btn-white btn-block">Delete</a>
+                        </div>
+                      </div>
+  	            		</li>
+  	            	</ul>
+  	            	<hr/>
+  	            	<a ng-click="addressadd(c)" class="btn btn-white btn-block">Add New Address</a>
+  	            </li>
+          	</ul>
+        </div>
+    </div>
+  </div>
+</div>
+<script type="text/ng-template" id="newcustomer.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">New Customer</h4>
+  </div>
+  <div class="modal-body">
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_name.$invalid && !newCompanyForm.company_name.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-briefcase"></i>
+          </div>          
+          <input type="text" class="form-control" name="company_name" ng-model="company.name" placeholder="Business Name" required/>
+         
+        </div>
+         <p ng-show="newCompanyForm.company_name.$error.required && !newCompanyForm.company_name.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-phone"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_phone" ng-model="company.phone" placeholder="Contact Phone" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_email.$invalid && !newCompanyForm.company_email.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-mail"></i>
+              </div>      
+              <input type="email" class="form-control" name="company_email" ng-model="company.email"  placeholder="Email Address" />
+              
+            </div>
+            <p ng-show="newCompanyForm.company_email.$error.email && !newCompanyForm.company_email.$pristine" class="text-danger">Not Valid Email.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="registration_no" ng-model="company.registration_no"  placeholder="Registration No. (Optional)" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="vat_no" ng-model="company.vat_no" placeholder="VAT No. (Optional)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-credit-card"></i>
+              </div>      
+              <input type="number" class="form-control" name="credit_amount" ng-model="company.initial_creditAmount"  placeholder="Credit Amount" required/>
+            </div>
+             <p ng-show="newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine" class="text-danger">Please input a valid number here.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.sales_channel.$invalid && !newCompanyForm.sales_channel.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-flow-tree"></i>
+              </div>  
+              <select class="form-control" name="sales_channel" ng-model="company.sales_channel" ng-options="c.channel_name for c in channel" required>
+                <option value="" disabled selected>Select Sales Channel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br></br>
+
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.firstline.$invalid && !newCompanyForm.firstline.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+          <input type="text" class="form-control" name="firstline" ng-model="address.first_line" placeholder="Address: First Line" required/>
+        </div>
+        <p ng-show="newCompanyForm.firstline.$error.required && !newCompanyForm.firstline.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="form-group">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+            <input type="text" class="form-control" name="secondline" ng-model="address.second_line"  placeholder="Address: Second Line (Optional)" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_city.$invalid && !newCompanyForm.company_city.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_city" ng-model="address.city" placeholder="City" required/>
+            </div>
+            <p ng-show="newCompanyForm.company_city.$error.required && !newCompanyForm.company_city.$pristine" class="text-danger">This is required.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_postcode.$invalid && !newCompanyForm.company_postcode.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_postcode" ng-model="address.zipcode" placeholder="Post Code" required/>
+              <p ng-show="newCompanyForm.company_postcode.$error.required && !newCompanyForm.company_postcode.$pristine" class="text-danger">This is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-address"></i>
+              </div>  
+              <select class="form-control" ng-model="address.country" ng-options="c.name for c in country" required>
+                <option value="" disabled selected>Select Country</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>
+<script type="text/ng-template" id="addressedit.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Address Edit</h4>
+  </div>
+  <div class="modal-body">
+    <label class="checkbox">
+      <input type="checkbox" ng-model="address.is_default">
+      This is default address.
+    </label>
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.firstline.$invalid && !newCompanyForm.firstline.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+          <input type="text" class="form-control" name="firstline" ng-model="address.first_line" placeholder="Address: First Line" required/>
+        </div>
+        <p ng-show="newCompanyForm.firstline.$error.required && !newCompanyForm.firstline.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="form-group">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+            <input type="text" class="form-control" name="secondline" ng-model="address.second_line"  placeholder="Address: Second Line (Optional)" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_city.$invalid && !newCompanyForm.company_city.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_city" ng-model="address.city" placeholder="City" required/>
+            </div>
+            <p ng-show="newCompanyForm.company_city.$error.required && !newCompanyForm.company_city.$pristine" class="text-danger">This is required.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_postcode.$invalid && !newCompanyForm.company_postcode.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_postcode" ng-model="address.zipcode" placeholder="Post Code" required/>
+              <p ng-show="newCompanyForm.company_postcode.$error.required && !newCompanyForm.company_postcode.$pristine" class="text-danger">This is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-address"></i>
+              </div>  
+              <select class="form-control" ng-model="address.country" ng-options="c.name for c in country" required>
+                <option value="" disabled selected>Select Country</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>
+<script type="text/ng-template" id="editcustomer.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">New Customer</h4>
+  </div>
+  <div class="modal-body">
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_name.$invalid && !newCompanyForm.company_name.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-briefcase"></i>
+          </div>          
+          <input type="text" class="form-control" name="company_name" ng-model="company.name" placeholder="Business Name" required/>
+         
+        </div>
+         <p ng-show="newCompanyForm.company_name.$error.required && !newCompanyForm.company_name.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-phone"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_phone" ng-model="company.phone" placeholder="Contact Phone" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_email.$invalid && !newCompanyForm.company_email.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-mail"></i>
+              </div>      
+              <input type="email" class="form-control" name="company_email" ng-model="company.email"  placeholder="Email Address" />
+              
+            </div>
+            <p ng-show="newCompanyForm.company_email.$error.email && !newCompanyForm.company_email.$pristine" class="text-danger">Not Valid Email.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="registration_no" ng-model="company.registration_no"  placeholder="Registration No. (Optional)" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="vat_no" ng-model="company.vat_no" placeholder="VAT No. (Optional)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine}">        
+            <label>Initial Credit Amount</label>
+            <div class="input-group">
+              
+              <div class="input-group-addon">
+                <i class="entypo-credit-card"></i>
+              </div>      
+              <input type="number" class="form-control" name="credit_amount" ng-model="company.initial_creditAmount"  placeholder="Initial Credit Amount" required/>
+            </div>
+             <p ng-show="newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine" class="text-danger">Please input a valid number here.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.current_credit_amount.$invalid && !newCompanyForm.current_credit_amount.$pristine}">        
+             <label>Credit Amount Balance</label>
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-credit-card"></i>
+              </div>      
+              <input type="number" class="form-control" name="current_credit_amount" ng-model="company.credit_amount"  placeholder="Credit Amount Balance" required/>
+            </div>
+             <p ng-show="newCompanyForm.current_credit_amount.$invalid && !newCompanyForm.current_credit_amount.$pristine" class="text-danger">Please input a valid number here.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.sales_channel.$invalid && !newCompanyForm.sales_channel.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-flow-tree"></i>
+              </div>  
+              <select class="form-control" name="sales_channel" ng-model="company.sales_channel" ng-options="c.channel_name for c in channel" required>
+                <option value="" disabled selected>Select Sales Channel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>

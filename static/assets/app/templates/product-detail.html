@@ -1,0 +1,101 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{product.name}}
+    </h2>
+  </div>
+</div>
+<hr/>
+<br/>
+<div>
+  <div class=" row">
+    <div class="col-md-1 col-xs-2">
+      <h3 ng-click="thumbnailup()" class="text-center btn-link entypo-up-open-big"></h3>
+      <br/>
+      <div ng-repeat="image in thumbnaillist">
+        <img ng-click="clickselectimg(image)" ng-src="/site_media/media/{{image.image}}" alt="Responsive image" class="img-thumbnail" />
+        <br/>
+        <br/>
+      </div>
+      <h3 ng-click="thumbnaildown()" class="text-center btn-link entypo-down-open-big"></h3>
+    </div>
+    <div class="col-md-5 col-xs-10">
+      <img ng-src="/site_media/media/{{selectedimg.image}}" alt="" class="img-responsive center-block" />
+      <br/>
+    </div>
+    <div class="clearfix visible-sm visible-xs"></div>
+    <div class="col-md-6">
+      <h3>{{product.belong_to.default_currency.symbol}}{{product.rrp}}</h3>
+      <dl>
+        <br/>
+        <dt>Inventory Count</dt>
+        <dd>{{product.inventory_free}}</dd>
+        <br/>
+        <dt ng-if="product.pid">Product Code<dt>
+        <dd ng-if="product.pid">{{product.pid}}</dd>
+        <br ng-if="product.pid"/>
+        <dt>Description</dt>
+        <dd>{{product.description}}</dd>
+        <br/>
+        <dt>Tags</dt>
+        <dd><span ng-repeat="t in product.tag">{{t.name}} </span></dd>
+      </dl>
+      <div class="row">
+        <div class="col-md-4">
+          <a ng-href="#/product-edit/{{product.id}}" class="btn btn-block btn-info">EDIT</a>
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-block btn-success">ADD TO ORDER</button>
+        </div>
+        <div class="col-md-4">
+          <button ng-click="view(product)" class="btn btn-block btn-white">MORE...</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/ng-template" id="productmoreinfo.html">
+        
+        <div class="modal-header">
+          <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">{{product.name}} | More Info</h4>
+        </div>
+        
+        <div class="modal-body">
+          <h4>Inventory</h4>
+          <table class="table table-bordered datatable">
+            <tbody>
+              <tr>
+                <td>Locked Inventory</td>
+                <td>{{product.inventory_lock}}</td>
+              </tr>
+              <tr>
+                <td>Minimum Alert Inventory</td>
+                <td>{{product.min_qty}}</td>
+              </tr>
+              <tr>
+                <td>Inventory Policy</td>
+                <td ng-if="product.is_fifo">F.I.F.O.</td>
+                <td ng-if="!product.is_fifo">L.I.F.O.</td>
+              </tr>
+              <tr>
+                <td>Inventory Status</td>
+                <td>{{product.inventory_status.name}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <h4>Price</h4>
+          <table class="table table-bordered datatable">
+            <tbody>
+              <tr>
+                <td>Minimum Sale Price</td>
+                <td>{{product.min_sale_price}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <button type="button" class="btn btn-info" ng-click="viewinventory()">View Inventory Records</button>
+        </div>
+        
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+        </div>
+</script>

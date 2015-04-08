@@ -1,0 +1,96 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Order
+    </h2>
+  </div>
+</div>
+<hr/>
+<div class="row">
+  <div class="col-md-2 col-sm-6">
+    <a ng-href="#/order-add" class="btn btn-success btn-icon btn-block btn-large">
+          New Order
+      <i class="entypo-plus"></i>   
+    </a>
+  </div>
+  <hr class="visible-xs visible-sm"/>
+  <div class="col-md-6 col-sm-6">
+  	<div class="input-group">
+       	<div class="input-group-btn">
+       		<button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">{{searchbytext}}<span class="caret"></span></button>
+	        <ul class="dropdown-menu">
+	          <li><a ng-click="triggersearch(1)">Product</a></li>
+	          <li><a ng-click="triggersearch(2)">Customer</a></li>
+	          <li><a ng-click="triggersearch(3)">Order ID</a></li>
+	          <li><a ng-click="triggersearch(0)">All</a></li>
+	        </ul>
+            <input type="hidden" name="category" class="category">
+      </div>
+      <input class="form-control" type="text" ng-model="searchtext" placeholder="Input keywords to search orders" name="q">
+    </div>
+  </div>
+  <div class="form-inline col-md-4 col-sm-4">
+  	<div class="pull-right"
+	    <label>Sort by: </label>
+	   	<select ng-init="ordercritia=orderbyoptions[0]" ng-model="ordercritia" ng-options="o.name for o in orderbyoptions" class="form-control">
+	   	</select>
+	</div>
+  </div>
+</div>
+<hr/>
+
+<div class="row" masonry>
+	<div ng-repeat="order in orders | filter: searchfunc | orderBy: ordercritia.orderBy | filter: filterowner" class="col-md-3 col-sm-6 col-xs-12 masonry-brick">
+		<div class="tile-block tile-gray" id="todo_tasks">
+			
+			<div ng-click="goorderdetail(order.id)" class="tile-content">
+				
+			 <ul class="list-group">
+	            <li class="list-group-item">
+	            	<h4 class="list-group-item-heading text-center">To: {{order.customer.name}}
+	            	</h4>
+	            	<p class="list-group-item-text text-center">
+	            			{{order.delivery_address.first_line}}<br/> {{order.delivery_address.city}}, {{order.delivery_address.zipcode}}
+	            	</p>
+	            </li>
+	            <li ng-repeat="r in order.records | filter:filtercancelled" class="list-group-item">
+	            	<div class="row">
+	            		<div class="col-xs-6">
+	            			<h5>{{r.product.name}}</h5>
+	            		</div>
+	            		<div class="col-xs-6">
+	            			<h5 class="text-right">{{r.quantity}} X {{r.product.belong_to.default_currency.symbol}}{{r.product.rrp*r.discount_percentage/100}}</h5>
+	            			<p class="badge pull-right" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</p>
+	            		</div>
+	            	</div>
+	            </li>
+	            <li class="list-group-item">
+	            	<div class="row">
+	            		<div class="col-xs-12">
+	            			<h4 class="text-success text-right">{{order.records[0].product.belong_to.default_currency.symbol}}{{order.total_price}}</h4>
+	            		</div>
+	            		<div class="col-xs-12">
+	            			<p class="list-group-item-text text-right">{{order.date.getDate()}}-{{order.date.getMonth()+1}}-{{order.date.getFullYear()}}</p>
+	            		</div>
+	            	</div>
+	            </li>
+	            <li class="list-group-item">
+	            	<p><strong>ID: </strong>{{order.uuid}}</p>
+	            			<progressbar class="progress-striped active" max="100" value="order.statusvalue" type="{{order.statustype}}">{{order.status.name}}</progressbar>
+	            </li>
+	          </ul>
+				
+			</div>
+			
+		</div>
+	</div>
+</div>
+<div ng-if="loading">
+	<br/>
+	<br/>
+	<br/>
+	<h1 class="text-center">
+		<div class="row">
+			<img src="/site_media/assets/images/loading.gif" class="text-center" width="30" height="30" alt="" /img>
+		</div>
+	</h1>
+</div>

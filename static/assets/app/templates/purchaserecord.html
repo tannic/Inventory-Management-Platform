@@ -1,0 +1,191 @@
+<div data-spy="affix" data-offset-top="60" data-offset-bottom="200">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>INVENTORY
+        <i ng-click="startlist()" class="entypo-list"></i>
+        <i ng-click="startcard()" class="entypo-vcard"></i>
+      </h2>
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-6">
+      <h4>Total Product: {{products.length}}
+            <span ng-if="!showinactive" class="btn-link" ng-click="clickshowinactive()">
+              <small>(inactive products: {{products.length-activenumber}} /
+              </small>
+            </span>
+            <span ng-if="showinactive" class="btn-link" ng-click="clickshowinactive()">
+              <small class="text-danger">(hide inactive products /
+              </small>
+            </span>
+            <span ng-if="!showoutstock" class="btn-link" ng-click="clickshowoutstock()">
+              <small>nearly out of stock: {{products.length-activenumber}})
+              </small>
+            </span>
+            <span ng-if="showoutstock" class="btn-link" ng-click="clickshowoutstock()">
+              <small>show all products)
+              </small>
+            </span>
+      </h4>
+    </div>
+    <div class="col-md-3 col-md-offset-3">
+      <input ng-model="searchtext" type="text" class="form-control" placeholder="Search Product">
+    </div>
+  </div>
+  <hr/>
+  <div class="row">
+    <div class="col-md-2">
+      <a href="#/product-new" class="btn btn-green btn-icon btn-large">
+            Add New Product
+        <i class="entypo-plus"></i>   
+      </a>
+    </div>
+    <div class="col-md-6">
+      <label>Tags: </label>
+      <div class="btn-group">
+              <label ng-repeat='tag in tags' ng-click="selectedtag(tag.id)" ng-class="{'btn btn-green':tag.checked, 'btn btn-white':!tag.checked}">
+                 {{tag.name}}
+              </label>
+      </div>
+    </div>
+    <div class="form-inline col-md-4  text-right">
+      <label>Sort by: </label>
+     <select ng-model="ordercritia" ng-options="o.name for o in orderbyoptions" class="form-control">
+     </select>
+    </div>
+  </div>
+</div>
+<br/>
+<div>
+  <div id="cards" ng-if="cardview" class=" row" masonry>
+    <div class="col-md-4 col-sm-6 col-sx-12 masonry-brick" ng-repeat="p in products | filter:searchtext | filter:tagfilter | filter:activefilter | filter:outstockfilter | orderBy:ordercritia.orderBy">
+      <div class="panel panel-info">
+        <div class="panel-heading">          
+          <div class="panel-title">
+            <h4 ng-href="#/product-records/{{p.id}}" >
+                  {{p.name}}
+                </h4>
+                <span ng-href="#/product-records/{{p.id}}" ><small>{{p.pid}}</small></span>
+          </div>
+          <div class="panel-options">
+                <a data-rel="collapse"><i class="entypo-down-open"></i></a>
+                <a data-rel="reload"><i class="entypo-arrows-ccw"></i></a>
+          </div>     
+        </div>
+        <div class="panel-body">
+            <alert ng-repeat="alert in p.alert" type="alert.type" close="closeAlert(p,$index)">{{alert.msg}}</alert>
+            <p>Current Inventory: <span class="label label-success" ng-if="p.inventory_free>p.min_qty">{{p.inventory_free}}</span><span class="label label-secondary" ng-if="p.inventory_free<=p.min_qty">{{p.inventory_free}}</span><p>
+            <hr/>
+            <div class="row form-horizontal" >
+              <div class="col-sm-8 col-xs-6" ng-if="p.instockrecord.length!=0">
+                <h4>Recent Instock Record</h4>
+              </div>
+              <div class="col-sm-8 col-xs-6" ng-if="p.instockrecord.length==0">
+                <h4><em>Oops! No Instock Record.</em> :(</h4>
+              </div>
+              <div class="col-sm-4 col-xs-6">
+                  <a ng-href="#/instock-list/{{p.id}}" class="btn btn-default btn-icon btn-block">Add New<i class="entypo-plus"></i></a>
+              </div>
+            </div>
+        </div>
+        <table class="table table-responsive" ng-if="p.instockrecord.length!=0"  ng-if="p.instockrecord.length!=0">
+          <thead>
+                <tr>
+                  <th>Quantity</th>
+                  <th>Cost</th>
+                  <th>Availabe Quantity</th>
+                  <th>Instock Date</th>
+                </tr>
+          </thead>
+
+          <tbody>
+            <tr ng-repeat="r in p.instockrecord" >
+              <td>{{r.initial_instock_qty}}</td>
+              <td>{{r.purchase_record.purchase_currency.symbol}}{{r.purchase_record.purchase_price}}</td>
+              <td>{{r.available_qty}}</td>
+              <td>{{r.instock_date}}</td>
+            </tr>
+          </tbody>
+        </table>
+        <hr/>
+        <div class="panel-body">
+            <div class="row form-horizontal" >
+              <div class="col-sm-8 col-xs-6" ng-if="p.purchaserecord.length!=0">
+                <h4>Recent Purchase Record</h4>
+              </div>
+              <div class="col-sm-8 col-xs-6" ng-if="p.purchaserecord.length==0">
+                <h4><em>Oops! No Purchase Record.</em> :(</h4>
+              </div>
+              <div class="col-sm-4 col-xs-6">
+                  <a ng-href="#/purchase-list/{{p.id}}" class="btn btn-default btn-icon btn-block">Add New<i class="entypo-plus"></i></a>
+              </div>
+            </div>
+        </div>
+          <table class="table table-responsive" ng-if="p.purchaserecord.length!=0">
+            <thead>
+                  <tr>
+                    <th>Quantity</th>
+                    <th>Cost</th>
+                    <th>Supplier</th>
+                    <th>Purchase Date</th>
+                  </tr>
+            </thead>
+
+            <tbody>
+              <tr ng-repeat="r in p.purchaserecord ">
+                <td>{{r.purchase_qty}}</td>
+                <td>{{r.purchase_currency.symbol}}{{r.purchase_price}}</td>
+                <td>{{r.supplier.name}}</td>
+                <td>{{r.purchase_date}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <a class="btn btn-default btn-block" ng-href="#/product-records/{{p.id}}">MORE...</a>
+      </div>
+    </div>
+  </div>
+
+  <table class="table table-bordered datatable" ng-if="listview">
+    <thead>
+          <tr>
+            <th>Name</th>
+            <th>Code</th>
+            <th>R.R.P.({{currentuser.belong_to.default_currency.name}})</th>
+            <th>Free Inventory</th>
+            <th>Active Status</th>
+            <th>Actions</th>
+          </tr>
+    </thead>
+    
+    <tbody>
+      <tr ng-repeat="p in products | filter:searchtext | filter:tagfilter | filter:activefilter | filter:outstockfilter | orderBy:ordercritia.orderBy">
+        <td>{{p.name}}</td>
+        <td>{{p.pid}}</td>
+        <td>{{p.rrp}}</td>
+        <td>{{p.inventory_free}}</td>
+        <td>{{p.inventory_status.name}}</td>
+        <td>
+          <a ng-click="view(employee)" class="btn btn-default btn-sm btn-icon icon-left">
+            <i class="entypo-pencil"></i>
+            Edit
+          </a>
+          
+          <a ng-click="delEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="employee.is_active">
+            <i class="entypo-cancel"></i>
+            Deactivate
+          </a>
+          <a ng-click="actEmployee(employee.id)" class="btn btn-danger btn-sm btn-icon icon-left" ng-if="!employee.is_active">
+            <i class="entypo-cancel"></i>
+            Activate
+          </a>
+          
+          <a ng-click="view(employee)" class="btn btn-info btn-sm btn-icon icon-left">
+            <i class="entypo-info"></i>
+            Profile
+          </a>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

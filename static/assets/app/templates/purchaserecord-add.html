@@ -1,0 +1,258 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>New Purchase Record <small> {{product.name}}</small>
+    </h2>
+  </div>
+</div>
+<hr/>
+<br/>
+<div>
+  <div class=" row">
+    <div class="col-md-1 col-xs-2 hidden-sm hidden-xs">
+      <h3 ng-click="thumbnailup()" class="text-center btn-link entypo-up-open-big"></h3>
+      <br/>
+      <div ng-repeat="image in thumbnaillist">
+        <img ng-click="clickselectimg(image)" ng-src="/site_media/media/{{image.image}}" alt="Responsive image" class="img-thumbnail" />
+        <br/>
+        <br/>
+      </div>
+      <h3 ng-click="thumbnaildown()" class="text-center btn-link entypo-down-open-big"></h3>
+    </div>
+    <div class="col-md-3 col-xs-10  hidden-sm hidden-xs">
+      <img ng-src="/site_media/media/{{selectedimg.image}}" alt="" class="img-responsive center-block" />
+      <br/>
+    </div>
+    <div class="clearfix visible-sm visible-xs"></div>
+    <div class="col-md-5 col-md-offset-2">
+      <alert ng-if="alert" type="danger" close="closeAlert()">{{alert}}</alert>
+      <form name="newPurchaseForm" class="form-wizard validate">
+        <div class="form-group">
+          <label class="control-label">Purchase ID (Optional):</label>              
+          <input name="id" ng-model="purchaserecord.purchase_id" type="text" class="form-control" placeholder="Purchase ID">
+        </div>
+        <div class="row">
+          <div class="col-md-6 col-sm-6">
+            <div class="form-group" ng-class="{'has-error' : newPurchasetForm.pd.$invalid && !newPurchaseForm.pd.$pristine}">
+              <label class="control-label">Purchase Date:</label>
+              <p class="input-group">
+                <input name="pd" type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="purchaserecord.purchase_date" is-open="opened1" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="open1($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+              </p>
+              <p ng-show="newPurchaseForm.pd.$error.required && !newPurchaseForm.pd.$pristine" class="text-danger">Purchase Date is required.</p>
+            </div>
+          </div>
+          <div class="col-md-6 col-sm-6">
+            <div class="form-group" ng-class="{'has-error' : purchaserecord.purchase_date>purchaserecord.anticipate_arrival_date && !newPurchaseForm.ad.$pristine}">
+              <label class="control-label">Anticipate Arrival Date (Optional):</label>
+              <p class="input-group">
+                <input name="ad" type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="purchaserecord.anticipate_arrival_date" is-open="opened2" min="purchaserecord.purchase_date" datepicker-options="dateOptions" close-text="Close" />
+                <span class="input-group-btn">
+                  <button class="btn btn-default" ng-click="open2($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+                </span>
+              </p>
+              <p ng-show="purchaserecord.purchase_date>purchaserecord.anticipate_arrival_date && !newPurchaseForm.ad.$pristine" class="text-danger">Anticipate Date cannot be before Purchase Date.</p>
+            </div>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Supplier (Optional):</label>
+          <p class="input-group">           
+            <input type="text" ng-model="purchaserecord.supplier" placeholder="Supplier Name" typeahead="c as c.name for c in companys | filter:$viewValue | limitTo:5" typeahead-on-select="selectcompany(purchaserecord.supplier)" class="form-control">
+            <span class="input-group-btn">
+              <a class="btn btn-info" ng-click="newsupplier()"><i class="glyphicon glyphicon-plus"></i>Add New Supplier</a>
+            </span>
+          </p>
+        </div>
+        <div collapse="isCollapsed">
+          <div class="well well-lg">
+            <h4>{{purchaserecord.supplier.name}}</h4>
+            <p>{{purchaserecord.supplier.email}}</p>
+            <p>{{purchaserecord.supplier.phone}}</p>
+            <br/>
+            <div ng-repeat="a in purchaserecord.supplier.address" ng-if="a.is_default">
+              <p>{{a.first_line}}</p>
+              <p>{{a.second_line}}</p>
+              <p>{{a.city}} {{a.zipcode}}</p>
+              <p>{{a.country.name}}</p>
+            </div>
+          </div> 
+        </div>
+        <div class="row">
+          <div class="col-sm-5">
+            <div class="form-group" ng-class="{'has-error' : newPurchaseFrom.qty.$invalid && !newPurchaseForm.qty.$pristine}">
+              <label class="control-label">Purchase Quantity:</label>
+                <input name="qty" ng-model="purchaserecord.purchase_qty" type="number" class="form-control" step="1" min="0" placeholder="Purchase Quantity" required>
+              <p ng-show="newPurchaseForm.qty.$error.required && !newPurchaseForm.qty.$pristine" class="text-danger">Purchase Quantity is required.</p>
+            </div>
+          </div>        
+          <div class="col-sm-5">
+            <div class="form-group">
+              <label class="control-label">Purchase Unit Price (Optional):</label>
+                <input name="id" ng-model="purchaserecord.purchase_price" type="number" class="form-control" step="0.01" min="0" placeholder="Purchase Price">
+            </div>
+          </div>
+          <div class="col-md-2 col-sm-2">
+            <div class="form-group">
+              <label class="control-label">Currency: </label>           
+              <select ng-model="purchaserecord.purchase_currency" ng-options="c.name for c in currency" class="form-control">
+              </select>
+            </div> 
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="control-label">Comment (Optional):</label>              
+          <textarea name="description" rows="3" ng-model="purchaserecord.comment" class="form-control" placeholder=" Any comment here."></textarea>
+        </div>
+      </form>
+      <div class="row">
+        <div class="col-xs-6">
+          <a ng-click="save()" class="btn btn-success btn-block" ng-disabled="newPurchaseForm.$invalid">Save</a>
+        </div>
+        <div class="col-xs-6">
+          <a href="#/purchase-list" class="btn btn-default btn-block">Cancel</a>
+        </div>
+      </div>
+    </div>
+    <hr/>
+    <div class="col-md-1 col-xs-2 visible-sm visible-xs">
+      <h3 ng-click="thumbnailup()" class="text-center btn-link entypo-up-open-big"></h3>
+      <br/>
+      <div ng-repeat="image in thumbnaillist">
+        <img ng-click="clickselectimg(image)" ng-src="/site_media/media/{{image.image}}" alt="Responsive image" class="img-thumbnail" />
+        <br/>
+        <br/>
+      </div>
+      <h3 ng-click="thumbnaildown()" class="text-center btn-link entypo-down-open-big"></h3>
+    </div>
+    <div class="col-md-3 col-xs-10  visible-sm visible-xs">
+      <img ng-src="/site_media/media/{{selectedimg.image}}" alt="" class="img-responsive center-block" />
+      <br/>
+    </div>
+  </div>
+</div>
+<script type="text/ng-template" id="newsupplier.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">New Supplier</h4>
+  </div>
+  <div class="modal-body">
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_name.$invalid && !newCompanyForm.company_name.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-briefcase"></i>
+          </div>          
+          <input type="text" class="form-control" name="company_name" ng-model="company.name" placeholder="Business Name" required/>
+          <p ng-show="newCompanyForm.company_name.$error.required && !newCompanyForm.company_name.$pristine" class="text-danger">This is required.</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-phone"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_phone" ng-model="company.phone" placeholder="Contact Phone" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_email.$invalid && !newCompanyForm.company_email.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-mail"></i>
+              </div>      
+              <input type="email" class="form-control" name="company_email" ng-model="company.email"  placeholder="Email Address" />
+              <p ng-show="newCompanyForm.company_email.$error.email && !newCompanyForm.company_email.$pristine" class="text-danger">Not Valid Email.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="registration_no" ng-model="company.registration_no"  placeholder="Registration No." />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="vat_no" ng-model="company.vat_no" placeholder="VAT No." />
+            </div>
+          </div>
+        </div>
+      </div>
+      <br></br>
+
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.firstline.$invalid && !newCompanyForm.firstline.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+          <input type="text" class="form-control" name="firstline" ng-model="address.first_line" placeholder="Address: First Line" required/>
+        </div>
+        <p ng-show="newCompanyForm.firstline.$error.required && !newCompanyForm.firstline.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="form-group">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+            <input type="text" class="form-control" name="secondline" ng-model="address.second_line"  placeholder="Address: Second Line (Optional)" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_city.$invalid && !newCompanyForm.company_city.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_city" ng-model="address.city" placeholder="City" required/>
+            </div>
+            <p ng-show="newCompanyForm.company_city.$error.required && !newCompanyForm.company_city.$pristine" class="text-danger">This is required.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_postcode.$invalid && !newCompanyForm.company_postcode.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_postcode" ng-model="address.zipcode" placeholder="Post Code" required/>
+              <p ng-show="newCompanyForm.company_postcode.$error.required && !newCompanyForm.company_postcode.$pristine" class="text-danger">This is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-address"></i>
+              </div>  
+              <select class="form-control" ng-model="address.country" ng-options="c.name for c in country" required>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>

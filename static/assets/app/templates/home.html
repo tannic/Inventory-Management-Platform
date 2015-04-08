@@ -1,0 +1,437 @@
+<div class="row">
+  <div class="col-md-12">
+    <h3>Welcome Back! {{currentuser.username}}
+    </h3>
+  </div>
+</div>
+<hr/>
+<div ng-if="isAdmin">
+	<div class="row">
+	  <div class="col-md-12">
+	    <h4>Our Popular Product
+	    </h4>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col-md-6">
+	  	<a href="#/product" class="btn btn-block btn-default">View All Product</a>
+	  </div>
+	  <div class="col-md-6">
+	  	<a href="#/product-new" class="btn btn-block btn-success">Add New Product</a>
+	  </div>
+	</div>
+	<br/>
+	<div class="cards row" masonry>
+		<div ng-repeat="p in topproducts" class="col-sm-6  masonry-brick">
+		
+			<div class="tile-stats tile-white tile-white-primary" ng-click="viewproduct(p.id)">
+				<div class="icon"><i class="entypo-basket"></i></div>
+				<h3 class="row">
+					<div class="col-xs-3">			
+						<a ng-href="#/product/{{p.id}}" >
+			              <img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;" imageonload/>
+			            </a>
+			        </div>
+		            <div class="col-xs-6">
+						<h4 ng-href="/product/{{p.id}}" class="text-center">{{p.name}}</h4>
+						<h4 ng-href="/product/{{p.id}}" class="text-center"><small>{{p.pid}}</small></h4>
+					</div>
+					<div class="col-xs-3">
+						<h4 class="text-center">{{p.belong_to.default_currency.symbol}}{{p.rrp}}</h4>
+						<h5 class="text-center" ng-class="{'text-danger': p.inventory_free<p.min_qty}">{{p.inventory_free}} Units</h5>
+					</div>
+				</h3>
+			</div>			
+		</div>
+	</div>
+	<hr/>
+	<div class="row">
+	  <div class="col-md-12">
+	    <a ng-init="showorder=false" ng-click="showorder=!showorder" class="btn btn-white btn-block btn-lg"><strong>My Orders In Progress</strong>
+	    	<span class="pull-left">&nbsp;&nbsp;</span>
+	    	<span class="badge badge-info pull-left">{{(orders | filter: filterorder).length}}</span>
+	    </a>
+	  </div>
+	</div>
+	<div class="wrapper-div well" ng-if="showorder">
+		<div class="row">
+		  <div class="col-md-6 col-md-offset-3">
+		  	<a href="#/order-add" class="btn btn-success btn-block btn-sm">Add New Order</a>
+		  </div>
+		</div>
+		<br/>
+		<div class="row orders" masonry>
+			<div ng-repeat="order in orders | filter: filterorder | orderBy: '-id' " class="col-md-3 col-sm-6 col-xs-12 masonry-brick">
+				<div class="tile-block tile-gray" id="todo_tasks">
+					
+					<div ng-click="goorderdetail(order.id)" class="tile-content">
+						
+					 <ul class="list-group">
+			            <li class="list-group-item">
+			            	<h4 class="list-group-item-heading text-center">To: {{order.customer.name}}
+			            	</h4>
+			            	<p class="list-group-item-text text-center">
+			            			{{order.delivery_address.first_line}}<br/> {{order.delivery_address.city}}, {{order.delivery_address.zipcode}}
+			            	</p>
+			            </li>
+			            <li ng-repeat="r in order.records | filter:filtercancelled" class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-6">
+			            			<h5>{{r.product.name}}</h5>
+			            		</div>
+			            		<div class="col-xs-6">
+			            			<h5 class="text-right">{{r.quantity}} X {{r.product.belong_to.default_currency.symbol}}{{r.product.rrp*r.discount_percentage/100}}</h5>
+			            			<p class="badge pull-right" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</p>
+			            		</div>
+			            	</div>
+			            </li>
+			            <li class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-12">
+			            			<h4 class="text-success text-right">{{order.records[0].product.belong_to.default_currency.symbol}}{{order.total_price}}</h4>
+			            		</div>
+			            		<div class="col-xs-12">
+			            			<p class="list-group-item-text text-right">{{order.date.getDate()}}-{{order.date.getMonth()+1}}-{{order.date.getFullYear()}}</p>
+			            		</div>
+			            	</div>
+			            </li>
+			            <li class="list-group-item">
+			            	<p><strong>ID: </strong>{{order.uuid}}</p>
+			            			<progressbar class="progress-striped active" max="100" value="order.statusvalue" type="{{order.statustype}}">{{order.status.name}}</progressbar>
+			            </li>
+			          </ul>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+	  <div class="col-md-12">
+	    <a ng-init="showpickingup=false" ng-click="showpickingup=!showpickingup" class="btn btn-white btn-block btn-lg"><strong>Inventory - Picking Up Tasks</strong>
+	    	<span class="pull-left">&nbsp;&nbsp;</span>
+	    	<span class="badge badge-info pull-left">{{pickuprecords.length}}</span>
+	    </a>
+	  </div>
+	</div>
+	<div class="wrapper-div well" ng-if="showpickingup">
+		<div class="cards row" masonry>
+			<div ng-repeat="p in pickupproducts" class="col-sm-6  masonry-brick">
+				<div class="tile-block tile-gray" id="todo_tasks">
+					
+					<div class="tile-content">
+						
+					 <ul class="list-group">
+			            <li class="list-group-item">
+			            	<p class="pull-right">
+			            		<img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;"/>
+			            	</p>
+			            	<h4 class="list-group-item-heading">{{p.name}}
+			            	</h4>
+			            	<p class="list-group-item-text">
+			            			{{p.pid}}
+			            	</p>
+			            </li>
+			            <li ng-repeat="r in pickuprecords | filter: pickuprecordsfilter(p)" class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-5">
+			            			<h5>To: {{r.customer}} ({{r.date.toDateString()}})</h5>
+			            			<h5>{{r.uuid}}</h5>
+			            		</div>
+			            		<div class="col-xs-5">
+			            			<h5 class="text-left">{{r.quantity}}
+				            			<span class="badge" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</span>
+				            		</h5>
+			            		</div>
+			            		<div class="col-xs-2">
+			            			<a ng-if="r.status.name=='pending'" class="btn btn-info btn-block btn-sm" ng-click="changeconfirmedstatus(r)" ng-disabled="r.changing">comfirm</a>
+			            			<a ng-if="r.status.name=='confirmed'" class="btn btn-info btn-block btn-sm" ng-click="changepickupstatus(r)" ng-disabled="r.changing">picked up</a>
+			            		</div>
+			            	</div>
+			            </li>
+			            <li class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-sm-6 col-sm-offset-6">
+			            			<h4 class="text-right"><small>in total</small> <strong>{{p.pickupcount}}</strong> <small>units</small></h4>
+			            		</div>
+			            	</div>
+			            </li>
+			          </ul>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+	  <div class="col-md-12">
+	    <a ng-init="showinstock=false" ng-click="showinstock=!showinstock" class="btn btn-white btn-block btn-lg"><strong>Inventory - Instock Tasks</strong>
+	    	<span class="pull-left">&nbsp;&nbsp;</span>
+	    	<span class="badge badge-info pull-left">{{(purchaserecord|filter:purchaserecordfilter).length}}</span>
+	    </a>
+	  </div>
+	</div>
+	<div class="wrapper-div well" ng-if="showinstock">
+		<div class="cards row" masonry>
+			<div ng-repeat="p in purchaseRecordsProduct | filter: purchaserecordproductfilter" class="col-sm-6  masonry-brick">
+				<div class="tile-block tile-gray" id="todo_tasks">
+					
+					<div class="tile-content">
+						
+					 <ul class="list-group">
+			            <li class="list-group-item">
+			            	<p class="pull-right">
+			            		<img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;"/>
+			            	</p>
+			            	<h4 class="list-group-item-heading">{{p.name}}
+			            	</h4>
+			            	<p class="list-group-item-text">
+			            			&nbsp;{{p.pid}}&nbsp;
+			            	</p>
+			            </li>
+			            <li ng-repeat="r in p.records | filter: purchaserecordfilter" class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-6">
+			            			<p>ID: <strong>{{r.purchase_id}}</strong></p>
+			            			<p>Unit Price: <strong>{{r.purchase_currency.symbol}}{{r.purchase_price}}</strong></p>
+					                <p>Purchase Date: <strong>{{r.purchase_date}}</strong></p>
+					                <p>Supplier: <strong>{{r.supplier.name}}</strong></p>
+			            		</div>
+			            		<div class="col-xs-6">
+			            			<h5 class="text-right">
+				            			<span class="badge badge-danger">{{r.left}} </span>
+				            			units have not arrived yet.
+				            		</h5>
+				            		<a ng-href="#/instock-list/{{p.id}}/{{r.id}}/{{r.left}}" class="btn btn-info btn-sm pull-right">Confirm arrival</a>
+			            		</div>
+			            	</div>
+			            </li>
+			          </ul>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	
+</div>
+<div ng-if="isMgr">Mgr</div>
+<div ng-if="isSales">
+	<div class="row">
+	  <div class="col-md-12">
+	    <h4>My Orders In Progress
+	    </h4>
+	  </div>
+	</div>
+	<div class="row">
+	  <div class="col-md-6">
+	  	<a href="#/order-add" class="btn btn-success">Add New Order</a>
+	  </div>
+	</div>
+	<br/>
+	<div class="row" masonry>
+		<div ng-repeat="order in orders | filter: filterorder | orderBy: '-id' " class="col-md-3 col-sm-6 col-xs-12 masonry-brick">
+			<div class="tile-block tile-gray" id="todo_tasks">
+				
+				<div ng-click="goorderdetail(order.id)" class="tile-content">
+					
+				 <ul class="list-group">
+		            <li class="list-group-item">
+		            	<h4 class="list-group-item-heading text-center">To: {{order.customer.name}}
+		            	</h4>
+		            	<p class="list-group-item-text text-center">
+		            			{{order.delivery_address.first_line}}<br/> {{order.delivery_address.city}}, {{order.delivery_address.zipcode}}
+		            	</p>
+		            </li>
+		            <li ng-repeat="r in order.records | filter:filtercancelled" class="list-group-item">
+		            	<div class="row">
+		            		<div class="col-xs-6">
+		            			<h5>{{r.product.name}}</h5>
+		            		</div>
+		            		<div class="col-xs-6">
+		            			<h5 class="text-right">{{r.quantity}} X {{r.product.belong_to.default_currency.symbol}}{{r.product.rrp*r.discount_percentage/100}}</h5>
+		            			<p class="badge pull-right" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</p>
+		            		</div>
+		            	</div>
+		            </li>
+		            <li class="list-group-item">
+		            	<div class="row">
+		            		<div class="col-xs-12">
+		            			<h4 class="text-success text-right">{{order.records[0].product.belong_to.default_currency.symbol}}{{order.total_price}}</h4>
+		            		</div>
+		            		<div class="col-xs-12">
+		            			<p class="list-group-item-text text-right">{{order.date.getDate()}}-{{order.date.getMonth()+1}}-{{order.date.getFullYear()}}</p>
+		            		</div>
+		            	</div>
+		            </li>
+		            <li class="list-group-item">
+		            	<p><strong>ID: </strong>{{order.uuid}}</p>
+		            			<progressbar class="progress-striped active" max="100" value="order.statusvalue" type="{{order.statustype}}">{{order.status.name}}</progressbar>
+		            </li>
+		          </ul>
+					
+				</div>
+				
+			</div>
+		</div>
+	</div>
+	<br/>
+	<hr/>
+	<div class="row">
+	  <div class="col-md-12">
+	    <h4>Our Popular Product
+	    </h4>
+	  </div>
+	</div>
+	<div class="cards row" masonry>
+		<div ng-repeat="p in topproducts" class="col-sm-6  masonry-brick">
+		
+			<div class="tile-stats tile-white tile-white-primary" ng-click="viewproduct(p.id)">
+				<div class="icon"><i class="entypo-basket"></i></div>
+				<h3 class="row">
+					<div class="col-xs-3">			
+						<a ng-href="#/product/{{p.id}}" >
+			              <img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;" imageonload/>
+			            </a>
+			        </div>
+		            <div class="col-xs-6">
+						<h4 ng-href="/product/{{p.id}}" class="text-center">{{p.name}}</h4>
+						<h4 ng-href="/product/{{p.id}}" class="text-center"><small>{{p.pid}}</small></h4>
+					</div>
+					<div class="col-xs-3">
+						<h4 class="text-center">{{p.belong_to.default_currency.symbol}}{{p.rrp}}</h4>
+						<h5 class="text-center" ng-class="{'text-danger': p.inventory_free<p.min_qty}">{{p.inventory_free}} Units</h5>
+					</div>
+				</h3>
+			</div>
+			
+		</div>
+	</div>
+	<br/>
+	<div class="row">
+	  <div class="col-md-12">
+	  	<a href="#/product" class="btn btn-block btn-default">View All Product</a>
+	  </div>
+	</div>
+</div>
+<div ng-if="isInvenmgr">
+	<div class="row">
+	  <div class="col-md-12">
+	    <a ng-init="showpickingup=true" ng-click="showpickingup=!showpickingup" class="btn btn-white btn-block btn-lg"><strong>Inventory - Picking Up Tasks</strong>
+	    	<span class="pull-left">&nbsp;&nbsp;</span>
+	    	<span class="badge badge-info pull-left">{{pickuprecords.length}}</span>
+	    </a>
+	  </div>
+	</div>
+	<div class="well" ng-if="showpickingup">
+		<div class="cards row" masonry>
+			<div ng-repeat="p in pickupproducts" class="col-sm-6  masonry-brick">
+				<div class="tile-block tile-gray" id="todo_tasks">
+					
+					<div class="tile-content">
+						
+					 <ul class="list-group">
+			            <li class="list-group-item">
+			            	<p class="pull-right">
+			            		<img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;"/>
+			            	</p>
+			            	<h4 class="list-group-item-heading">{{p.name}}
+			            	</h4>
+			            	<p class="list-group-item-text">
+			            			{{p.pid}}
+			            	</p>
+			            </li>
+			            <li ng-repeat="r in pickuprecords | filter: pickuprecordsfilter(p)" class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-5">
+			            			<h5>To: {{r.customer}} ({{r.date.toDateString()}})</h5>
+			            			<h5>{{r.uuid}}</h5>
+			            		</div>
+			            		<div class="col-xs-5">
+			            			<h5 class="text-left">{{r.quantity}}
+				            			<span class="badge" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</span>
+				            		</h5>
+			            		</div>
+			            		<div class="col-xs-2">
+			            			<a ng-if="r.status.name=='pending'" class="btn btn-info btn-block btn-sm" ng-click="changeconfirmedstatus(r)" ng-disabled="r.changing">comfirm</a>
+			            			<a ng-if="r.status.name=='confirmed'" class="btn btn-info btn-block btn-sm" ng-click="changepickupstatus(r)" ng-disabled="r.changing">picked up</a>
+			            		</div>
+			            	</div>
+			            </li>
+			            <li class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-sm-3">
+			            			<a ng-click="confirmall(p)" class="btn btn-info btn-block" ng-disabled="p.changing">confirm all</a>
+			            		</div>
+			            		<div class="col-sm-3">
+			            			<a ng-click="pickedupall(p)" class="btn btn-success btn-block" ng-disabled="p.changing">picked up all</a>
+			            		</div>
+			            		<div class="col-sm-6">
+			            			<h3 class="text-right"><small>in total</small> {{p.pickupcount}} <small>units</small></h3>
+			            		</div>
+			            	</div>
+			            </li>
+			          </ul>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+	  <div class="col-md-12">
+	    <a ng-init="showinstock=true" ng-click="showinstock=!showinstock" class="btn btn-white btn-block btn-lg"><strong>Inventory - Instock Tasks</strong>
+	    	<span class="pull-left">&nbsp;&nbsp;</span>
+	    	<span class="badge badge-info pull-left">{{(purchaserecord|filter:purchaserecordfilter).length}}</span>
+	    </a>
+	  </div>
+	</div>
+	<div class="well" ng-if="showinstock">
+		<div class="cards row" masonry>
+			<div ng-repeat="p in purchaseRecordsProduct | filter: purchaserecordproductfilter" class="col-sm-6  masonry-brick">
+				<div class="tile-block tile-gray" id="todo_tasks">
+					
+					<div class="tile-content">
+						
+					 <ul class="list-group">
+			            <li class="list-group-item">
+			            	<p class="pull-right">
+			            		<img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;"/>
+			            	</p>
+			            	<h4 class="list-group-item-heading">{{p.name}}
+			            	</h4>
+			            	<p class="list-group-item-text">
+			            			&nbsp;{{p.pid}}&nbsp;
+			            	</p>
+			            </li>
+			            <li ng-repeat="r in p.records | filter: purchaserecordfilter" class="list-group-item">
+			            	<div class="row">
+			            		<div class="col-xs-6">
+			            			<p>ID: <strong>{{r.purchase_id}}</strong></p>
+			            			<p>Unit Price: <strong>{{r.purchase_currency.symbol}}{{r.purchase_price}}</strong></p>
+					                <p>Purchase Date: <strong>{{r.purchase_date}}</strong></p>
+					                <p>Supplier: <strong>{{r.supplier.name}}</strong></p>
+			            		</div>
+			            		<div class="col-xs-6">
+			            			<h5 class="text-right">
+				            			<span class="badge badge-danger">{{r.left}} </span>
+				            			units have not arrived yet.
+				            		</h5>
+				            		<a ng-href="#/instock-list/{{p.id}}/{{r.id}}/{{r.left}}" class="btn btn-info btn-sm pull-right">Confirm arrival</a>
+			            		</div>
+			            	</div>
+			            </li>
+			          </ul>
+						
+					</div>
+					
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div ng-if="isAccount">Account</div>

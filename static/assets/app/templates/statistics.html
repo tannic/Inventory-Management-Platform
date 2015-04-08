@@ -1,0 +1,232 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>STATISTICS
+    </h2>
+  </div>
+</div>
+<hr/>
+<form name="daterange">
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="form-group" ng-class="{'has-error' : daterange.startdate.$invalid && !daterange.startdate.$pristine}">
+			  <label class="control-label">Start Date:</label>
+			  <p class="input-group">
+			    <input name="startdate" type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="startdate" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" max="enddate" />
+			    <span class="input-group-btn">
+			      <button class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			    </span>
+			  </p>
+			  <p ng-show="daterange.startdate.$error.required && !daterange.startdate.$pristine" class="text-danger">This is required.</p>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="form-group" ng-class="{'has-error' : daterange.enddate.$invalid && !daterange.enddate.$pristine}">
+			  <label class="control-label">End Date:</label>
+			  <p class="input-group">
+			    <input name="enddate" type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="enddate" is-open="opened1" datepicker-options="dateOptions" ng-required="true" close-text="Close" max="today" min="startdate" />
+			    <span class="input-group-btn">
+			      <button class="btn btn-default" ng-click="open1($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			    </span>
+			  </p>
+			  <p ng-show="daterange.enddate.$error.required && !daterange.enddate.$pristine" class="text-danger">This is required.</p>
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-xs-12">
+			<a ng-init="employeeclose=false" ng-click="loaddate()" class="btn btn-default btn-block"><strong class="text-left" ng-disabled="daterange.$invalid">START LOADING DATA</strong></a>
+		</div>
+	</div>
+</form>
+<progressbar ng-if="!finishloading" class="progress-striped active" max="100" value="progress" type="{{order.statustype}}">{{order.status.name}}</progressbar>
+<br/>
+<hr/>
+<div class="row">
+	<div class="col-xs-12">
+		<a ng-init="employeeclose=false" ng-click="employeeclose=!employeeclose" class="btn btn-white btn-block"><strong class="text-left" ng-disabled="!finishloading">EMPLOYEE </strong><img src="/site_media/assets/images/loading.gif" ng-if="employeeloading" width="15" height="15" alt="" /img></a>
+	</div>
+</div>
+<div collapse="!finishloading||employeeclose" class="well">
+	<div class="row">
+		<div class="col-md-6 col-sm-6">
+			<div class="tile-stats tile-white stat-tile">
+				<h3>{{employee.length-inactivenum}} Employees</h3>
+				<p>exclude {{inactivenum}} inactive employees</p>
+				<span id="employee-components" class="pie-chart"></span>
+			</div>		
+		</div>
+		<div class="col-sm-6">
+			<div class="panel panel-primary panel-table">
+				<div class="panel-heading">
+					<div class="panel-title" style="padding: 30px 25px;">
+						<h3>Top Sales</h3>
+					</div>
+				</div>
+				<div class="panel-body">	
+					<table class="table table-responsive">
+						<thead>
+							<tr>
+								<th>Username</th>
+								<th>Yearly Sales</th>
+								<th class="text-center">{{figuretext}}</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr ng-repeat="s in topsales">
+								<td>{{s.name}}</td>
+								<td>{{symbol}}{{s.sales}}</td>
+								<td class="text-center"><span jq-sparkline ng-model="s.rangesales" opts="{{ topsaleopts }}"></span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>		
+	</div>
+</div>
+<br/>
+<div class="row">
+	<div class="col-xs-12">
+		<a ng-init="productclose=false" ng-click="productclose=!productclose" class="btn btn-white btn-block"><strong class="text-left" ng-disabled="!finishloading">PRODUCT </strong><img src="/site_media/assets/images/loading.gif" ng-if="productloading" width="15" height="15" alt="" /img><a>
+	</div>
+</div>
+<div collapse="!finishloading||productclose" class="well">
+	<div class="row">
+		<div class="col-sm-6">
+			<div class="panel panel-primary panel-table">
+				<div class="panel-heading">
+					<div class="panel-title" style="padding: 30px 25px;">
+						<h3>Top Products</h3>
+						<span>By total sales</span>
+					</div>
+				</div>
+				<div class="panel-body">	
+					<table class="table table-responsive">
+						<thead>
+							<tr>
+								<th>Product ID</th>
+								<th>Name</th>
+								<th>Sale</th>
+								<th class="text-center">{{figuretext}}</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr ng-repeat="p in topproduct">
+								<td>{{p.pid}}</td>
+								<td>{{p.name}}</td>
+								<td>{{symbol}}{{p.totalsale}}</td>
+								<td class="text-center"><span jq-sparkline ng-model="p.rangesales" opts="{{ topproductopts }}"></span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<div class="panel panel-primary panel-table">
+				<div class="panel-heading">
+					<div class="panel-title" style="padding: 30px 25px;">
+						<h3>Top Products</h3>
+						<span>By total units sold</span>
+					</div>
+				</div>
+				<div class="panel-body">	
+					<table class="table table-responsive">
+						<thead>
+							<tr>
+								<th>Product ID</th>
+								<th>Name</th>
+								<th>Units</th>
+								<th class="text-center">{{figuretext}}</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr ng-repeat="p in topproductunit">
+								<td>{{p.pid}}</td>
+								<td>{{p.name}}</td>
+								<td>{{p.totalunit}}</td>
+								<td class="text-center"><span jq-sparkline ng-model="p.rangeunits" opts="{{ topproductunitopts }}"></span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<br/>
+<div class="row">
+	<div class="col-xs-12">
+		<a ng-init="customerclose=false" ng-click="customerclose=!customerclose" class="btn btn-white btn-block"><strong class="text-left" ng-disabled="!finishloading">CUSTOMER </strong><a>
+	</div>
+</div>
+<div collapse="!finishloading||customerclose" class="well">
+	<div class="row">
+		<div class="col-md-6 col-sm-6">
+			<div class="tile-stats tile-white stat-tile">
+				<h3>{{customertotalnum}} Customers</h3>
+				<span id="customer-components" class="pie-chart"></span>
+			</div>		
+		</div>
+		<div class="col-sm-6">
+			<div class="panel panel-primary panel-table">
+				<div class="panel-heading">
+					<div class="panel-title" style="padding: 30px 25px;">
+						<h3>Top Customers</h3>
+						<span>By total purchase</span>
+					</div>
+				</div>
+				<div class="panel-body">	
+					<table class="table table-responsive">
+						<thead>
+							<tr>
+								<th>Custumer</th>
+								<th>Purchase Amount</th>
+								<th>Channel</th>
+								<th class="text-center">{{figuretext}}</th>
+							</tr>
+						</thead>
+						
+						<tbody>
+							<tr ng-repeat="c in topcustomer">
+								<td>{{c.name}}</td>
+								<td>{{symbol}}{{c.sales}}</td>
+								<td>{{c.channel}}</td>
+								<td class="text-center"><span jq-sparkline ng-model="c.rangesales" opts="{{ topcustomeropts }}"></span></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+<br/>
+<div class="row">
+	<div class="col-xs-12">
+		<a ng-init="orderclose=false" ng-click="orderclose=!orderclose" class="btn btn-white btn-block"><strong class="text-left" ng-disabled="!finishloading">ORDER </strong><img src="/site_media/assets/images/loading.gif" ng-if="orderloading" width="15" height="15" alt="" /img><a>
+	</div>
+</div>
+<div collapse="!finishloading||orderclose" class="well">
+	<div class="row">
+		<div class="col-md-3 col-sm-6">
+			<div class="tile-stats tile-white stat-tile">
+				<h3>{{orders.length}} orders</h3>
+				<p>{{completion_ratio}}% Completion</p>
+				<span id="orders-components" class="pie-chart"></span>
+			</div>		
+		</div>
+
+		<div class="col-md-3 col-sm-6">
+			<div id="ordersales" class="tile-stats tile-white stat-tile">
+				<h3>{{symbol}}{{totalsales}} Sales</h3>
+				<p>{{symbol}}{{avgsales}} avg. Sales per {{salesrangetext}}</p>
+				<span class="monthly-sales"></span>
+			</div>		
+		</div>
+	</div>
+</div>

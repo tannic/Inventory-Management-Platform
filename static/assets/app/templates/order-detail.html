@@ -1,0 +1,700 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>Order <small>{{order.uuid}}</small>
+    </h2>
+   	<p ng-if="!loading" class="text-info">Sales: {{order.sales.username}} ({{order.sales.first_name}} {{order.sales.last_name}})</p>
+  </div>
+</div>
+<hr/>
+<div ng-if="loading">
+	<br/>
+	<br/>
+	<br/>
+	<h1 class="text-center">
+		<div class="row">
+			<img src="/site_media/assets/images/loading.gif" class="text-center" width="30" height="30" alt="" /img>
+		</div>
+	</h1>
+</div>
+<div ng-if="!loading">
+	<div ng-if="order.status.name=='ready to ship'||order.status.name=='shipped'" class="row">
+		<div class="col-sm-12">
+			<a ng-click="changeorderstatus()" class="btn btn-block btn-info btn-lg" ng-disabled="changingorderstatus">
+					<strong>{{order.orderstatustext.toUpperCase()}}</strong>
+			</a>
+		</div>
+	</div>
+	<hr/>
+	<progressbar class="progress-striped active" max="100" value="order.statusvalue" type="{{order.statustype}}">{{order.status.name}}</progressbar>
+	<hr/>
+	<form collapse="orderformcollapse" name="OrderForm" class="form-wizard validate">
+		<h4>Basic Information</h4>
+		<div class="row" style="padding:20px">
+			<div class="row col-sm-3">
+				<div class="row">
+					<div class="form-group col-sm-12" ng-class="{'has-error' : OrderForm.name.$invalid && !OrderForm.name.$pristine}">
+				      <label class="control-label">Customer:</label>
+				      <p class="input-group">           
+				        <input type="text" name="name" ng-model="order.customer" placeholder="Customer Name" typeahead="c as c.name for c in customers | filter:$viewValue | limitTo:5" typeahead-on-select="selectcustomer()" class="form-control" required>
+				        <span class="input-group-btn">
+				          <a class="btn btn-info" ng-click="newcustomer()"><i class="glyphicon glyphicon-plus"></i>New</a>
+				        </span>
+				      </p>
+				      <p ng-show="OrderForm.name.$error.required && !OrderForm.name.$pristine" class="text-danger">This is required.</p>
+				    </div>
+				</div>
+				<div class="row">
+				    <div class="col-sm-12">
+			            <div class="form-group" ng-class="{'has-error' : OrderForm.date.$invalid && !OrderForm.date.$pristine}">
+			              <label class="control-label">Date:</label>
+			              <p class="input-group">
+			                <input name="date" type="text" class="form-control" datepicker-popup="yyyy-MM-dd" ng-model="order.date" is-open="opened" datepicker-options="dateOptions" ng-required="true" close-text="Close" />
+			                <span class="input-group-btn">
+			                  <button class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+			                </span>
+			              </p>
+			              <p ng-show="OrderForm.date.$error.required && !OrderForm.date.$pristine" class="text-danger">This is required.</p>
+			            </div>
+		          	</div>
+		          </div>
+		          <br/>
+		          <hr/>
+		          <div class="row">
+		          	<div class="col-sm-12">
+		          		<br/>
+			            <div class="form-group">
+				          <label class="control-label">Comment (Optional):</label>              
+				          <textarea name="description" rows="5" ng-model="order.comment" class="form-control" placeholder=" Any comment here."></textarea>
+				        </div>
+		          	</div>
+				</div>
+			</div>
+			<div class="row col-sm-8 col-sm-offset-1">
+				<div collapse="isCollapsed">
+				  <div class="well">
+				  	<div class="row">
+				  		<div class="col-sm-4">
+					    	<h3>{{order.customer.name}}</h3>
+						</div>
+						<div class="col-sm-8">
+						    <p>Email: <strong>{{order.customer.email}}</strong></p>
+						    <p>Phone: <strong>{{order.customer.phone}}</strong></p>
+						    <p>Credit: <strong>{{default_currency.symbol}}{{order.customer.credit_amount}}</strong></p>
+						</div>
+					</div>
+				  </div> 
+				</div>
+				<h4 ng-if="!isCollapsed">Choose Delivery Address: </h4>
+				<div id="cards" class="row" masonry>
+				    <div class='col-md-4 col-sm-6 col-xs-6 masonry-brick' ng-repeat='a in order.customer.address'>
+				      <div class="tile-block" ng-class="{'tile-gray':!a.selected,'tile-green':a.selected}" id="todo_tasks" ng-style="style" ng-mouseover="style={background:'#E1ECDE'}" ng-mouseleave="style={}" ng-click="seladd(a)">		        
+				        <div class="tile-content">
+			        		<p><strong>{{a.first_line}}</strong><p>
+			                <p>{{a.second_line}}</strong></p>
+			                <p>{{a.city}} <strong>{{a.zipcode}}</strong></p>
+			                <p>{{a.country.name}}</p>
+				        </div>		            
+				    </div>
+				  </div>
+				</div>
+				<div class="row">
+					<a ng-click="addressadd(order.customer)" class="btn btn-white btn-block" ng-if="!isCollapsed"><i class="glyphicon glyphicon-plus"></i></a>
+				</div>
+			</div>
+		</div>
+	</form>
+	<div class="row" ng-if="!orderformcollapse">
+		<div class="col-sm-12">
+			<a ng-click="confirmorderinfo()" class="btn btn-default btn-block" ng-if="!isCollapsed && ! OrderForm.$invalid && order.delivery_address">
+				Comfirm Basic Info
+			</a>
+		</div>
+	</div>
+	<a ng-if="orderformcollapse" ng-click="confirmorderinfo()" class="btn btn-white btn-block" ng-if="!isCollapsed" ng-disabled="order.status.name=='shipped'||order.status.name=='completed'">
+		<div class="row">
+	  		<div class="col-sm-4">
+		    	<h3>{{order.customer.name}}</h3>
+		    	<h4><small>{{order.date.getDate()}}-{{order.date.getMonth()+1}}-{{order.date.getFullYear()}}</small></h4>
+		    	<p>{{order.comment}}</p>
+			</div>
+			<div class="col-sm-4 col-xs-6">
+			    <p>Email: <strong>{{order.customer.email}}</strong></p>
+			    <p>Phone: <strong>{{order.customer.phone}}</strong></p>
+			    <p>Credit: <strong>{{default_currency.symbol}}{{order.customer.credit_amount}}</strong></p>
+			    <p>Channel: <strong>{{order.customer.sales_channel.channel_name}}</strong></p>
+			</div>
+			<div class="col-sm-4 col-xs-6">
+	    		<p><strong>{{order.delivery_address.first_line}}</strong><p>
+	            <p>{{order.delivery_address.second_line}}</strong></p>
+	            <p>{{order.delivery_address.city}} <strong>{{order.delivery_address.zipcode}}</strong></p>
+	            <p>{{order.delivery_address.country.name}}</p>
+	        </div>	
+		</div>
+	</a>
+	<br/>
+	<div class="row" id="records" masonry>
+		<div ng-repeat="r in order.records | orderBy: movecanceltoend" class="col-sm-6  masonry-brick" ng-mouseleave="showdeleteicon=false;mouseoncard=true;mouseoverrecord()" ng-mouseover="showdeleteicon=true;mouseoncard=false;mouseoverrecord()">
+		
+			<div class="tile-stats" ng-class="{'tile-white': r.status.name!='cancel', 'tile-gray': r.status.name=='cancel'}">
+				<div ng-if="r.status.name!='cancel'" class="icon"><i class="entypo-basket"></i></div>
+				<div ng-if="r.status.name=='cancel'" class="icon"><i class="entypo-cancel-circled"></i></div>
+				<div ng-if="r.status.name!='cancel'" ng-show="order.status.name!='shipped'&&order.status.name!='completed'&&showdeleteicon" class="image-options">
+		            <a ng-click="delrecord(r)" class="delete"><i class="entypo-cancel"></i></a>
+		        </div>
+				<h3 class="row">
+					<div class="col-xs-3">			
+						<a ng-if="r.status.name!='cancel'" ng-click="selectproduct(r.product, r.status.name)" >
+			              <img ng-src="/site_media/media/{{r.product.image[0].image}}" class="img-responsive" style="min-height:50px;height:50px;" imageonload/>
+			            </a>
+			            <a ng-if="r.status.name=='cancel'">
+			              <img ng-src="/site_media/media/{{r.product.image[0].image}}" class="img-responsive desaturate" style="min-height:50px;height:50px;" imageonload/>
+			            </a>
+			        </div>
+		            <div class="col-xs-6">
+						<h4 class="text-center" ng-click="selectproduct(r.product, r.status.name)" >{{r.product.name}}</h4>
+						<h4 class="text-center" ng-click="selectproduct(r.product, r.status.name)" ><small>{{r.product.pid}}</small></h4>
+					</div>
+					<div class="col-xs-3">
+						<h4 ng-if="r.status.name!='cancel'" class="text-right" ng-class="{'text-danger':r.product.rrp*r.discount_percentage/100<r.product.min_sale_price, 'text-success':r.product.rrp*r.discount_percentage/100>=r.product.min_sale_price}" ng-click="selectproduct(r.product, r.status.name)" >{{r.product.belong_to.default_currency.symbol}}{{r.ttlprice}}</h4>
+						<p ng-click="selectproduct(r.product, r.status.name)" ng-if="r.status.name!='cancel'" class="text-right">{{r.quantity}}x{{r.unitprice}}</p>
+						<label ng-if="r.status.name!='cancel'" class="badge pull-right" ng-class="{'badge-warning': r.status.name=='pending', 'badge-info': r.status.name=='confirmed', 'badge-success': r.status.name=='picked up'}">{{r.status.name}}</label>
+					</div>
+				</h3>
+				<div ng-if="!mouseoncard" ng-show="r.status.name!='cancel'&&r.status.name!='picked up'" class="well" style="z-index: 10">
+							<a ng-click="changestatus(r)" class="btn btn-block btn-info" ng-disabled="disablechangestatus">{{r.statuschangetext}}</a>
+				</div>
+			</div>
+			
+		</div>
+	</div>
+	<a ng-if="order.records.length!=0&&!finishselectproduct" ng-click="clickfinishselect()" class="btn btn-white btn-block">Finish Adding Product</a>
+	<a ng-if="order.records.length!=0&&finishselectproduct" ng-click="clickfinishselect()" class="btn btn-white btn-block" ng-disabled="order.status.name=='shipped'||order.status.name=='completed'">
+		<div class="row">
+			<div class="col-sm-4 col-xs-6">
+				<br/>
+				<h4 ng-if="order.status.name!='shipped'&&order.status.name!='completed'" class="text-success">Click to Continue Adding Product</h4>
+			</div>
+			<div class="col-sm-4 col-sm-offset-4 col-xs-6">
+				<h2 class="text-success">{{order.records[0].product.belong_to.default_currency.symbol}}{{order.total_price}}</h2>
+				<p>Total Product: {{order.records.length}}</p>
+			</div>
+		</div>
+	</a>
+	<hr/>
+
+	<div ng-if="orderformcollapse&&!finishselectproduct" class="well well-lg">
+		<h4>Select Product:</h4>
+		<br/>
+		<div class="row">
+		  <div class="col-md-6">
+		    <label>Tags: </label>
+		    <div class="btn-group">
+		            <label ng-repeat='tag in tags' ng-click="selectedtag(tag.id)" ng-class="{'btn btn-green':tag.checked, 'btn btn-white':!tag.checked}">
+		               {{tag.name}}
+		            </label>
+		    </div>
+		  </div>
+		  <div class="col-md-4">
+		    <input ng-model="searchtext" type="text" class="form-control" placeholder="Search Product">
+		  </div>
+		  <div class="col-md-2 text-right">
+		   <select ng-model="ordercritia" ng-options="o.name for o in orderbyoptions" class="form-control">
+		   	<option value="" disabled selected>Sort By</option>
+		   </select>
+		  </div>
+		</div>
+		<br/>
+		  <div id="cards" ng-if="cardview" masonry>
+		    <div class="row">
+		    	<div class="col-md-4 col-sm-6 masonry-brick" ng-repeat="p in products | filter:searchtext | filter:tagfilter | filter:activefilter | filter:outstockfilter | orderBy:ordercritia.orderBy">
+				    <div ng-click="selectproduct(p)" class="tile-stats tile-white tile-white-primary">
+						<h3 class="row">
+							<div class="col-xs-3">			
+								<a>
+					              <img ng-src="/site_media/media/{{p.image[0].image}}" class="img-responsive" style="min-height:60px;height:60px;" imageonload/>
+					            </a>
+					        </div>
+				            <div class="col-xs-6">
+								<h4 class="text-center">{{p.name}}</h4>
+								<h4 class="text-center"><small>{{p.pid}}</small></h4>
+								<p>Tags:&nbsp
+				                  <span ng-repeat="t in p.tag">
+				                    <span ng-click="selectedtag(t.id)">{{t.name}}</span>
+				                    &nbsp
+				                  </span>
+				                </p>
+							</div>
+							<div class="col-xs-3">
+								<h4 class="text-success text-center">{{p.belong_to.default_currency.symbol}}{{p.rrp}}</h4>
+								<h4 class="text-center"><small>{{p.inventory_free}} Units</small></h4>
+							</div>
+						</h3>
+					</div>
+				</div>
+		    </div>
+		  </div>
+	</div>
+	<div class="row">
+		<div class="col-sm-12">
+			<a class="btn btn-block btn-white" ng-click="showinvoiceform()">
+				<div class="row">
+					<div class="col-sm-4 col-xs-6">
+						<br/>
+						<h4 class="text-success">Click to Show Invoice Information</h4>
+						<br/>
+					</div>
+					<div ng-if="historicalinvoice" class="col-sm-4 col-sm-offset-4 col-xs-6">
+						<h2 class="text-success text-center">{{order.records[0].product.belong_to.default_currency.symbol}}{{historicalinvoice.totalincvat}}</h2>
+						<p class="text-center"><strong>Inc. VAT </strong><label class="badge badge-success" ng-if="historicalinvoice.payment_status">Paid</label>
+						<label class="badge badge-danger" ng-if="!historicalinvoice.payment_status">Waiting for Payment</label></p>					
+					</div>
+				</div>
+			</a>
+		</div>
+	</div>
+	<div ng-if="historicalinvoice" collapse="addinvoice" class="row">
+		<div class="col-sm-12">
+			<table class="table table-responsive">
+				<thead>
+					<tr>
+						<th class="center">VAT Rate</th>
+						<th class="center">Term Days</th>
+						<th class="center">Payment Method</th>
+						<th class="center">Payment Status</th>
+						<th class="center">Address</th>
+						<th class="center">Comment</th>
+						<th class="center">Download</th>
+						<th class="center">Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="center">{{historicalinvoice.VAT_rate}}%</td>
+						<td class="center">{{historicalinvoice.term_days}}</td>
+						<td class="center">{{historicalinvoice.payment_method.name}}</td>
+						<td class="center">
+							<label class="badge badge-success" ng-if="historicalinvoice.payment_status">Paid</label>
+							<label class="badge badge-danger" ng-if="!historicalinvoice.payment_status">Waiting for Payment</label>
+							<a ng-if="!historicalinvoice.payment_status" ng-click="receivepayment()" class="btn btn-xs btn-info">Payment Received?</a>
+						</td>
+						<td class="center">{{historicalinvoice.invoice_address.first_line}} {{historicalinvoice.invoice_address.zipcode}}</td>
+						<td class="center">{{historicalinvoice.comment}}</td>
+						<td class="center"><a ng-href="/site_media/media/{{historicalinvoice.pdffile}}" class="btn btn-success" target="_blank">download</a></td>
+						<td class="center">{{historicalinvoice.tax_date}}</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div collapse="addinvoice" ng-if="!savinginvoicefinish" class="well">
+		<hr/>
+		<h4>Fill the Form to Generate New Invoice:</h4>
+		<hr/>
+		<br/>
+		<form name="InvoiceForm" class="row form-wizard validate">
+			<div class="col-sm-6">
+				<div class="row">
+					<div class="col-sm-6">
+			          <div class="form-group" ng-class="{'has-error' : InvoiceForm.vat.$invalid && !InvoiceForm.vat.$pristine}">
+			          	<label class="control-label">VAT Rate:</label>        
+			            <div class="input-group">
+			              <div class="input-group-addon">
+			                <i class="entypo-credit-card"></i>
+			              </div>      
+			              <input type="number" class="form-control" name="vat" ng-model="invoice.VAT_rate"  placeholder="VAT Rate" min="1" max="100" integer required/>
+			              <div class="input-group-addon">
+			                %
+			              </div> 
+			            </div>
+			             <p ng-show="InvoiceForm.vat.$invalid && !InvoiceForm.vat.$pristine" class="text-danger">Please input a valid number here.</p>
+			          </div>
+					</div>
+					<div class="col-sm-6">
+			          <div class="form-group" ng-class="{'has-error' : InvoiceForm.term.$invalid && !InvoiceForm.term.$pristine}">
+			          	<label class="control-label">Term Days:</label>        
+			            <div class="input-group">
+			              <div class="input-group-addon">
+			                <i class="entypo-credit-card"></i>
+			              </div>      
+			              <input type="number" class="form-control" name="term" ng-model="invoice.term_days"  placeholder="Term Days" min="1" integer/>
+			              <div class="input-group-addon">
+			                Days
+			              </div> 
+			            </div>
+			             <p ng-show="InvoiceForm.term.$invalid && !InvoiceForm.term.$pristine" class="text-danger">Please input a valid number here.</p>
+			          </div>
+					</div>
+					<div class="col-sm-6">
+			          <div class="form-group" ng-class="{'has-error' : InvoiceForm.paymentmethod.$invalid && !InvoiceForm.paymentmethod.$pristine}">        
+			            <div class="input-group">
+			              <div class="input-group-addon">
+			                <i class="entypo-flow-tree"></i>
+			              </div>  
+			              <select class="form-control" name="sales_channel" ng-model="invoice.payment_method" ng-options="p.name for p in paymentmethod" required>
+			                <option value="" disabled selected>Select Payment Method</option>
+			              </select>
+			            </div>
+			          </div>
+					</div>
+					<div class="col-sm-6">
+			          <div class="form-group">        
+						  <label class="checkbox">
+						    <input type="checkbox" ng-model="invoice.payment_status">
+						    	Has the payment been completed?
+						  </label>
+			          </div>
+					</div>			
+				</div>
+				<div class="row">
+					<div class="col-sm-12">
+			            <div class="form-group">
+				          <textarea name="description" rows="5" ng-model="invoice.comment" class="form-control" placeholder=" Any comment here. e.g. your bank details"></textarea>
+				        </div>
+		          	</div>	
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-6">
+					<label class="control-label">Please select invoice address:</label>
+					<div class="form-group">					
+						<div class="btn-group" data-toggle="buttons">
+							<button type="button" class="btn btn-white" ng-repeat='a in order.customer.address' btn-radio="{{a}}" ng-model="invoice.invoice_address">
+					        		<p><strong>{{a.first_line}}</strong><p>
+					                <p>{{a.second_line}}</strong></p>
+					                <p>{{a.city}} <strong>{{a.zipcode}}</strong></p>
+					                <p>{{a.country.name}}</p>
+							</button>
+						</div>
+						<div class="btn btn-white" ng-click="invoiceaddressadd(order.customer)">
+			        		<br/>
+			                <h1><strong>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></h1>
+			                <br/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<hr/>
+			<br/>
+			<div class="row">
+				<div class="col-sm-10 col-sm-offset-1">
+					<a class="btn btn-block btn-success" ng-click="saveinvoice()" ng-disabled="InvoiceForm.$invalid||savinginvoice"><strong>ADD INVOICE</strong></a>
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+<script type="text/ng-template" id="newcustomer.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">New Customer</h4>
+  </div>
+  <div class="modal-body">
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_name.$invalid && !newCompanyForm.company_name.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-briefcase"></i>
+          </div>          
+          <input type="text" class="form-control" name="company_name" ng-model="company.name" placeholder="Business Name" required/>
+         
+        </div>
+         <p ng-show="newCompanyForm.company_name.$error.required && !newCompanyForm.company_name.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-phone"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_phone" ng-model="company.phone" placeholder="Contact Phone" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_email.$invalid && !newCompanyForm.company_email.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-mail"></i>
+              </div>      
+              <input type="email" class="form-control" name="company_email" ng-model="company.email"  placeholder="Email Address" />
+              
+            </div>
+            <p ng-show="newCompanyForm.company_email.$error.email && !newCompanyForm.company_email.$pristine" class="text-danger">Not Valid Email.</p>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="registration_no" ng-model="company.registration_no"  placeholder="Registration No. (Optional)" />
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="vat_no" ng-model="company.vat_no" placeholder="VAT No. (Optional)" />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-credit-card"></i>
+              </div>      
+              <input type="number" class="form-control" name="credit_amount" ng-model="company.initial_creditAmount"  placeholder="Credit Amount" required/>
+            </div>
+             <p ng-show="newCompanyForm.credit_amount.$invalid && !newCompanyForm.credit_amount.$pristine" class="text-danger">Please input a valid number here.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.sales_channel.$invalid && !newCompanyForm.sales_channel.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-flow-tree"></i>
+              </div>  
+              <select class="form-control" name="sales_channel" ng-model="company.sales_channel" ng-options="c.channel_name for c in channel" required>
+                <option value="" disabled selected>Select Sales Channel</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+      <br></br>
+
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.firstline.$invalid && !newCompanyForm.firstline.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+          <input type="text" class="form-control" name="firstline" ng-model="address.first_line" placeholder="Address: First Line" required/>
+        </div>
+        <p ng-show="newCompanyForm.firstline.$error.required && !newCompanyForm.firstline.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="form-group">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+            <input type="text" class="form-control" name="secondline" ng-model="address.second_line"  placeholder="Address: Second Line (Optional)" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_city.$invalid && !newCompanyForm.company_city.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_city" ng-model="address.city" placeholder="City" required/>
+            </div>
+            <p ng-show="newCompanyForm.company_city.$error.required && !newCompanyForm.company_city.$pristine" class="text-danger">This is required.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_postcode.$invalid && !newCompanyForm.company_postcode.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_postcode" ng-model="address.zipcode" placeholder="Post Code" required/>
+              <p ng-show="newCompanyForm.company_postcode.$error.required && !newCompanyForm.company_postcode.$pristine" class="text-danger">This is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-address"></i>
+              </div>  
+              <select class="form-control" ng-model="address.country" ng-options="c.name for c in country" required>
+                <option value="" disabled selected>Select Country</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>
+<script type="text/ng-template" id="addressedit.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Address Edit</h4>
+  </div>
+  <div class="modal-body">
+    <label class="checkbox">
+      <input type="checkbox" ng-model="address.is_default">
+      This is default address.
+    </label>
+    <form name="newCompanyForm" class="form-wizard validate">
+      <div class="form-group" ng-class="{'has-error' : newCompanyForm.firstline.$invalid && !newCompanyForm.firstline.$pristine}">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+          <input type="text" class="form-control" name="firstline" ng-model="address.first_line" placeholder="Address: First Line" required/>
+        </div>
+        <p ng-show="newCompanyForm.firstline.$error.required && !newCompanyForm.firstline.$pristine" class="text-danger">This is required.</p>
+      </div>
+      <div class="form-group">        
+        <div class="input-group">
+          <div class="input-group-addon">
+            <i class="entypo-address"></i>
+          </div>      
+            <input type="text" class="form-control" name="secondline" ng-model="address.second_line"  placeholder="Address: Second Line (Optional)" />
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_city.$invalid && !newCompanyForm.company_city.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_city" ng-model="address.city" placeholder="City" required/>
+            </div>
+            <p ng-show="newCompanyForm.company_city.$error.required && !newCompanyForm.company_city.$pristine" class="text-danger">This is required.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : newCompanyForm.company_postcode.$invalid && !newCompanyForm.company_postcode.$pristine}">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-doc-text"></i>
+              </div>      
+              <input type="text" class="form-control" name="company_postcode" ng-model="address.zipcode" placeholder="Post Code" required/>
+              <p ng-show="newCompanyForm.company_postcode.$error.required && !newCompanyForm.company_postcode.$pristine" class="text-danger">This is required.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group">        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-address"></i>
+              </div>  
+              <select class="form-control" ng-model="address.country" ng-options="c.name for c in country" required>
+                <option value="" disabled selected>Select Country</option>
+              </select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="newCompanyForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>
+<script type="text/ng-template" id="orderrecord.html">
+  <div class="modal-header">
+    <button type="button" class="close" ng-click="cancel()" aria-hidden="true">&times;</button>
+    <h4 class="modal-title">Please provide quantity and discount</h4>
+  </div>
+  <div class="modal-body">
+    <div class="well">
+    	<p>By default, the products are sold with R.R.P. However, you can provide discount here.</p>
+    </div>
+    <form name="RecordForm" class="form-wizard validate">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : RecordForm.qty.$invalid && !RecordForm.qty.$pristine}">
+          	<label class="control-label">Quantity:</label>        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-basket"></i>
+              </div>      
+              <input type="number" class="form-control" name="qty" ng-model="record.quantity"  min="1" ng-max="product.inventory_free+record.quantity" placeholder="Quantity" integer required/>
+            </div>
+             <p ng-show="RecordForm.qty.$invalid && !RecordForm.qty.$pristine" class="text-danger">Please input a valid number here. Plese note current free inventory is {{product.inventory_free}} units.</p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group" ng-class="{'has-error' : RecordForm.discount.$invalid && !RecordForm.discount.$pristine}">
+          	<label class="control-label">Discount Percentage:</label>        
+            <div class="input-group">
+              <div class="input-group-addon">
+                <i class="entypo-credit-card"></i>
+              </div>      
+              <input type="number" class="form-control" name="discount" ng-model="record.discount_percentage"  placeholder="Discount Percentage" min="1" integer required/>
+              <div class="input-group-addon">
+                %
+              </div> 
+            </div>
+             <p ng-show="RecordForm.discount.$invalid && !RecordForm.discount.$pristine" class="text-danger">Please input a valid number here.</p>
+             <p ng-show="product.min_sale_price/product.rrp*100>record.discount_percentage" class="text-danger">Warning: The discount is lower than minimum sale price.</p>
+          </div>
+        </div>
+      </div>
+    </form>
+    <a ng-click="showproductinfo=!showproductinfo" class="btn btn-white btn-block">More Product Information</a>
+      <div collapse="showproductinfo" class="well">
+      	{{product.description}}
+	  	  <h4>Inventory</h4>
+		  <table class="table table-responsive">		  	
+		    <tbody>
+		      <tr>
+		        <td>Free Inventory</td>
+		        <td>{{product.inventory_free}}</td>
+		      </tr>
+		      <tr>
+		        <td>Locked Inventory</td>
+		        <td>{{product.inventory_lock}}</td>
+		      </tr>
+		      <tr>
+		        <td>Minimum Alert Inventory</td>
+		        <td>{{product.min_qty}}</td>
+		      </tr>
+		      <tr>
+		        <td>Inventory Policy</td>
+		        <td ng-if="product.is_fifo">F.I.F.O.</td>
+		        <td ng-if="!product.is_fifo">L.I.F.O.</td>
+		      </tr>
+		      <tr>
+		        <td>Inventory Status</td>
+		        <td>{{product.inventory_status.name}}</td>
+		      </tr>
+		    </tbody>
+		  </table>
+		  <h4>Price</h4>
+		  <table class="table table-bordered datatable">
+		    <tbody>
+		      <tr>
+		        <td>R.R.P.</td>
+		        <td>{{product.rrp}}</td>
+		      </tr>
+		      <tr>
+		        <td>Minimum Sale Price</td>
+		        <td>{{product.min_sale_price}}</td>
+		      </tr>
+		    </tbody>
+		  </table>
+	  </div>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+    <button type="button" class="btn btn-info" ng-click="ok()" ng-disabled="RecordForm.$invalid||submitted">{{save}}</button>
+  </div>
+</script>

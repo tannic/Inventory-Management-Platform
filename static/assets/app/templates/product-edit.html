@@ -1,0 +1,153 @@
+<div class="row">
+  <div class="col-md-12">
+    <h2>{{product.name}}</h2>
+  </div>
+</div>
+<div class="row" ng-show="!submit">
+  <div class="col-md-2">
+    <a ng-click="saveProduct()" class="btn btn-block btn-green btn-icon btn-large" ng-disabled="newProductForm.$invalid">
+          Save
+      <i class="entypo-plus"></i>   
+    </a>
+  </div>
+  <div class="col-md-2">
+    <a href="#/product" class="btn btn-block btn-default btn-icon btn-large">
+          Cancel
+      <i class="entypo-plus"></i>   
+    </a>
+  </div>
+</div>
+<br/>
+<div>
+  <div class=" row" ng-show="!submit">
+    <form name="newProductForm" class="form-wizard validate">
+      <div class="col-md-5">
+        <accordion close-others="false">
+          <accordion-group heading="Product Images" is-open="true">
+            <div class="row">
+              <div class="col-sm-12">
+                <div ng-show="dropSupported" class="drop-box" ng-file-drop="onFileSelect($files);" ng-file-drop-available="dropSupported=true"><h3 class="text-center dropbox-text"><em>Drop product images here, or press the button below to choose images</em></h3></div>
+              </div>
+              <div class="col-md-12">
+                <input type="file" accept="image/*" ng-file-select="onFileSelect($files)" multiple>
+              </div>
+              <div class="col-md-12">
+                <progressbar class="progress-striped active" max="100" value="totalprogress" type="success">{{totalprogress}}%</progressbar>
+                </div>
+              <hr/>
+              <div class="gallery-env col-sm-12">
+                <div id="cards" class="row" masonry>
+                  <div class="col-sm-6 col-xs-6 masonry-brick" ng-repeat="img in product.image">
+                
+                    <article class="image-thumb">
+                      
+                      <a class="image">
+                        <img ng-src="/site_media/media/{{img.image}}" imageonload/>
+                      </a>
+                      
+                      <div class="image-options">
+                        <a ng-click="imageDelete(img)" class="delete"><i class="entypo-cancel"></i></a>
+                      </div>
+                      
+                    </article>
+                  
+                  </div>
+                </div>
+              </div>
+            </div>
+          </accordion-group>
+        </accordion>
+      </div>
+      <div class="col-md-7" ng-show="!submit">
+          <accordion close-others="false">
+            <accordion-group heading="Basic Information" is-open="true">         
+              <div class="form-group" ng-class="{'has-error' : newProductForm.name.$invalid && !newProductForm.name.$pristine}">
+                <label class="control-label">Product Name:</label>              
+                <input name="name" ng-model="product.name" type="text" class="form-control" placeholder="Product Name" required>
+                <p ng-show="newProductForm.name.$error.required && !newProductForm.name.$pristine" class="text-danger">Product name is required.</p>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Product Code:</label>              
+                <input name="pid" ng-model="product.pid" type="text" class="form-control" placeholder="Product Code (Optional)">
+              </div>
+              <div class="form-group">
+                <label class="control-label">Product Description:</label>              
+                <textarea name="description" rows="3" ng-model="product.description" class="form-control" placeholder="Product Description (Optional)"></textarea>
+              </div>
+            </accordion-group>
+            <accordion-group heading="Tags" is-open="true"> 
+              <tags-input ng-model="product.tag" custom-class="bootstrap" placeholder="add a Tag" replace-spaces-with-dashes="false" add-on-comma="true" add-on-space="false" max-length="20" on-tag-added="addTag($tag)">
+                <auto-complete source="loadTags($query)"
+                     min-length="1"
+                     max-results-to-show="5">
+                </auto-complete> 
+              </tags-input>  
+            </accordion-group>
+            <accordion-group heading="Inventory Information" is-open="true">
+              <div class="form-group">
+                  <label class="control-label">Inventory Status:</label>           
+                  <select ng-model="product.inventory_status" ng-options="s.name for s in status" class="form-control" style="width:40%">
+                  </select>
+              </div>
+              <div class="form-group" ng-class="{'has-error' : newProductForm.inventory_free.$invalid && !newProductForm.inventory_free.$pristine}">
+                <label class="control-label">Current Inventory Count: </label>  
+                <p class="control-label text-danger well">It is <strong>NOT</strong> recommand to change inventory count here. Please use purchase and instock record to modify inventory count.</p>            
+                <div class="input-spinner">
+                  <button type="button" class="btn btn-default" ng-click="changeInven(-10)">-</button>
+                  <input type="number" name="inventory_free" class="form-control size-2" min="0" ng-model="product.inventory_free" required>
+                  <button type="button" class="btn btn-default" ng-click="changeInven(10)">+</button>
+                  <p class="text-danger" ng-show="newProductForm.inventory_free.$invalid && !newProductForm.inventory_free.$pristine">Please input a valid number here.</p>
+                </div>
+              </div>
+              <div class="form-group" ng-class="{'has-error': newProductForm.min_qty.$invalid && !newProductForm.min_qty.$pristine}">
+                <label class="control-label">Minimum Alert Inventory Count (Optional):</label>              
+                <div class="input-spinner">
+                  <button type="button" class="btn btn-default" ng-click="changeAlertInven(-10)">-</button>
+                  <input type="number" class="form-control size-2" min="0" max="{{product.inventory_free}}" ng-model="product.min_qty" name="min_qty">
+                  <button type="button" class="btn btn-default" ng-click="changeAlertInven(10)">+</button>
+                  <p class="text-danger" ng-show="newProductForm.min_qty.$invalid && !newProductForm.min_qty.$pristine">Please input a valid number.</p>
+                </div>
+              </div>
+              <div class="form-group" ng-class="{'has-error' : newProductForm.leadtime.$invalid && !newProductForm.leadtime.$pristine}">
+                <label class="control-label">Supplier Lead Time (Days, Optional):</label>              
+                <div class="input-spinner">
+                  <button type="button" class="btn btn-default" ng-click="changeLeadtime(-10)">-</button>
+                  <input name="leadtime" type="number" class="form-control size-2" min="0" ng-model="product.leadtime">
+                  <button type="button" class="btn btn-default" ng-click="changeLeadtime(10)">+</button>
+                  <p class="text-danger" ng-show="newProductForm.leadtime.$invalid && !newProductForm.leadtime.$pristine">Please input a valid number.</p>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label">Inventory Policy (Optional):  </label>              
+                <div class="btn-group">
+                  <button type="button" class="btn btn-white" ng-model="product.is_fifo" btn-radio="true">- First In First Out -</button>
+                  <button type="button" class="btn btn-white" ng-model="product.is_fifo" btn-radio="false">- Last In First Out -</button>
+                </div>
+              </div>
+            </accordion-group>
+            <accordion-group heading="Price Levels" is-open="true">
+              <div class="form-group" ng-class="{'has-error' : newProductForm.rrp.$invalid && !newProductForm.rrp.$pristine}">
+                <label class="control-label">R.R.P ({{currentuser.belong_to.default_currency.symbol}}):</label>              
+                <div class="input-spinner">
+                  <button type="button" class="btn btn-default" ng-click="changeRrp(-1)">-</button>
+                  <input name="rrp" type="number" step="0.01" class="form-control size-2" min="0" ng-model="product.rrp" required>
+                  <button type="button" class="btn btn-default" ng-click="changeRrp(1)">+</button>
+                </div>
+                <p class="text-danger" ng-show="newProductForm.rrp.$invalid && !newProductForm.rrp.$pristine">Please input a valid Recommanded Retail Price here.</p>
+              </div>
+              <div class="form-group" ng-class="{'has-error' : (newProductForm.min_sale_price.$invalid && !newProductForm.min_sale_price.$pristine) || (product.rrp<product.min_sale_price && !newProductForm.min_sale_price.$pristine)}">
+                <label class="control-label">Minimum Sales Price ({{currentuser.belong_to.default_currency.symbol}}):</label>              
+                <div class="input-spinner">
+                  <button type="button" class="btn btn-default" ng-click="changeMsp(-1)">-</button>
+                  <input name="min_sale_price" type="number" step="0.01" class="form-control size-2" min="0" ng-model="product.min_sale_price">
+                  <button type="button" class="btn btn-default" ng-click="changeMsp(1)">+</button>
+                </div>
+                <p class="text-danger" ng-show="newProductForm.min_sale_price.$invalid && !newProductForm.min_sale_price.$pristine">Please input a valid Recommanded Retail Price here.</p>
+                <p class="text-danger" ng-show="product.rrp<product.min_sale_price && !newProductForm.min_sale_price.$pristine">Minimun sale price cannot be lower than R.R.P.</p>
+              </div>
+            </accordion-group>
+          </accordion>   
+      </div>
+    </form>
+  </div>
+</div>
