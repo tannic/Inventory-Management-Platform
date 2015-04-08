@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Neon Admin Panel" />
+	<meta name="author" content="" />
+	
+	<title>Pitaya Inventory Solution | Registration</title>
+
+	<link rel="stylesheet" href="/site_media/assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css">
+	<link rel="stylesheet" href="/site_media/assets/css/font-icons/entypo/css/entypo.css">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">
+	<link rel="stylesheet" href="/site_media/assets/css/bootstrap.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-core.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-theme.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-forms.css">
+	<link rel="stylesheet" href="/site_media/assets/css/custom.css">
+	<link rel="stylesheet" href="/site_media/assets/css/skins/white.css">
+
+	<script type="text/javascript"> 
+	<!-- 
+	(function() { 
+	    if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) { 
+	        var msViewportStyle = document.createElement("style"); 
+	        msViewportStyle.appendChild( 
+	            document.createTextNode("@-ms-viewport{width:auto!important}") 
+	        ); 
+	        document.getElementsByTagName("head")[0].appendChild(msViewportStyle); 
+	    } 
+	})(); 
+	//--> 
+	</script>
+	<script src="/site_media/assets/js/jquery-1.11.0.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-route.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-cookies.js"></script>
+	<script src="/site_media/assets/js/ng-tags-input.min.js"></script>
+
+	<script src="/site_media/assets/app/app.js"></script>
+	<script src="/site_media/assets/app/controller.js"></script>
+	<script src="/site_media/assets/app/service.js"></script>
+	<script src="/site_media/assets/js/angular-masonry.min.js"></script>
+	<script src="/site_media/assets/js/masonry.pkgd.min.js"></script>
+
+
+	<!--[if lt IE 9]><script src="/site_media/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	
+</head>
+<body class="page-body login-page login-form-fall" >
+
+<div class="login-container">
+	<div class="login-header login-caret">
+		
+		<div class="login-content">
+			
+			<a href="#" class="logo">
+				<img src="/site_media/assets/images/logo@lg.png" width="120" alt="" />
+			</a>
+			
+			<p class="description">cloud based inventory management solution</p>
+			
+			<!-- progress bar indicator -->
+			<div class="login-progressbar-indicator">
+				<h3>43%</h3>
+				<span>logging in...</span>
+			</div>
+		</div>
+		
+	</div>	
+	
+	<div class="main-content">
+		
+	
+
+<form id="rootwizard-2" method="post" action="" class="form-wizard validate">
+	{% csrf_token %}
+	<div class="steps-progress">
+		<div class="progress-indicator"></div>
+	</div>
+	
+	<ul>
+		<li class="active">
+			<a href="#tab2-1" data-toggle="tab"><span>1</span><h5>ACCOUNT</h5><h6 class='text-muted'>Basice Info</h6></a>
+		</li>
+		<li>
+			<a href="#tab2-2" data-toggle="tab"><span>2</span><h5>COMPANY</h5><h6 class='text-muted'>Company Details</h6></a>
+		</li>
+		<li>
+			<a href="#tab2-3" data-toggle="tab"><span>3</span><h5>EMPLOYEE</h5><h6 class='text-muted'>Profile</h6></a>
+		</li>
+		<li>
+			<a href="#tab2-4" data-toggle="tab"><span>4</span><h5>FINISH</h5><h6 class='text-muted'>Finish Registration</h6></a>
+		</li>
+	</ul>
+	<div class="col-md-6 col-md-offset-3">
+		<div class="tab-content">
+		<div class="tab-pane active" id="tab2-1">			
+			<div class="form-group" id="username_form">
+
+				<div class="input-group">
+					<div id='user_message' class="input-group-addon">
+						<i class="entypo-user"></i>
+					</div>
+					
+					<input type="text" class="form-control" name="username" id="username" data-validate="minlength[5]" data-message-minlength="Username must have minimum of 5 chars." placeholder="Username" />
+					
+				</div>
+				<div id='username_label'>
+				</div>	
+			</div>
+
+			<div class="form-group" id='email_form'>
+				<div class="input-group">
+
+					<div id='email_message' class="input-group-addon">
+						<i class="entypo-mail"></i>
+					</div>
+					
+					<input type="text" class="form-control" name="email" id="email" data-validate="required,email" placeholder="Email Address" />
+				</div>
+				<div id='email_label'>
+				</div>	
+			</div>
+
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-user"></i>
+							</div>
+					
+							<input type="text" class="form-control" name="firstname" id="firstname" placeholder="First Name (Optional)" />
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-6">
+					<div class="form-group">
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-user"></i>
+							</div>
+					
+							<input type="text" class="form-control" name="lastname" id="lastname" placeholder="Last Name (Optional)" />
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<div class="row">
+				
+				<div class="col-md-6">
+					<div class="form-group">					
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-key"></i>
+							</div>
+							
+							<input type="password" class="form-control" name="password" id="password" data-validate="required" placeholder="Enter strong password" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-6">						
+					<div class="form-group">						
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-cw"></i>
+							</div>
+							
+							<input type="password" class="form-control" name="password" id="password" data-validate="required,equalTo[#password]" data-message-equal-to="Passwords doesn't match." placeholder="Confirm password" />
+						</div>
+					</div>
+				</div>
+			</div>		
+		</div>
+		
+		<div class="tab-pane" id="tab2-2">
+			<div class="form-group">				
+				<div class="input-group">
+					<div class="input-group-addon">
+						<i class="entypo-briefcase"></i>
+					</div>					
+					<input type="text" class="form-control" name="company_name" id="company_name" data-validate="required" placeholder="Business Name" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-phone"></i>
+							</div>			
+							<input type="text" class="form-control" name="company_phone" id="company_phone"  data-validate="number" placeholder="Contact Phone" />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-mail"></i>
+							</div>			
+							<input type="text" class="form-control" data-validate="email" name="company_email" id="company_email"  placeholder="Email Address" />
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-doc-text"></i>
+							</div>			
+							<input type="text" class="form-control" name="registration_no" id="registration_no"  placeholder="Registration No." />
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-doc-text"></i>
+							</div>			
+							<input type="text" class="form-control" name="vat_no" id="vat_no"  placeholder="VAT No." />
+						</div>
+					</div>
+				</div>
+			</div>
+			<br></br>
+
+			<div class="form-group">				
+				<div class="input-group">
+					<div class="input-group-addon">
+						<i class="entypo-address"></i>
+					</div>			
+					<input type="text" class="form-control" name="firstline" id="firstline"  placeholder="Address: First Line" data-validate="required"/>
+				</div>
+			</div>
+			<div class="form-group">				
+				<div class="input-group">
+					<div class="input-group-addon">
+						<i class="entypo-address"></i>
+					</div>			
+						<input type="text" class="form-control" name="secondline" id="secondline"  placeholder="Address: Second Line (Optional)" />
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-doc-text"></i>
+							</div>			
+							<input type="text" class="form-control" name="company_city" id="company_city"  placeholder="City" data-validate="required"/>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-doc-text"></i>
+							</div>			
+							<input type="text" class="form-control" name="company_postcode" id="company_postcode"  placeholder="Post Code" data-validate="required"/>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-address"></i>
+							</div>	
+							<select class="form-control" id="countrylist">
+							</select>
+								<script type="text/javascript">
+									var countryhtml;
+									var x = document.getElementById("countrylist");
+									$.ajax({
+										async:false,
+										type:'get',
+										url:'/api/v1/country/',
+										success:function(response){
+											console.log(response);
+											response.objects.forEach(
+											function(entry){
+												if(!countryhtml){
+													countryhtml="<option value="+entry.id+">"+entry.name+"</option>";
+												}
+												else{
+													countryhtml=countryhtml+"<option value="+entry.id+">"+entry.name+"</option>";
+												}
+											});
+										},
+										error:function(response){
+											console.log(response);
+										},
+									});
+									$("#countrylist").html(countryhtml);
+									console.log(x.innerHTML);
+
+								</script>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane" id="tab2-3">
+			<div class="form-group">
+				<table style="color: rgba(0, 0, 0, 0.5)" class="table table-bordered table-striped datatable" id="employees">
+				<thead>
+					<tr>
+						<th>Role</th>
+						<th>Username</th>
+						<th>Actions</th>
+					</tr>
+				</thead>
+				<tbody>
+				</tbody>
+				</table>
+			</div>
+			<div class="row">
+				<div class="col-md-6">
+					<div class="form-group" id="employee_username_form">
+						<div class="input-group">
+							<div id='employee_user_message' class="input-group-addon">
+								<i class="entypo-user"></i>
+							</div>				
+							<input type="text" class="form-control" name="employeename" id="employeename" data-validate="minlength[5],required" data-message-minlength="Username must have minimum of 5 chars." placeholder="Username" />
+						</div>
+					<div id='employee_username_label'>
+				</div>	
+			</div>
+				</div>
+				<div class="col-md-6">
+					<div class="form-group">				
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-address"></i>
+							</div>	
+							<select class="form-control" id="role_list">
+							</select>
+						</div>
+					</div>
+				</div>
+			</div>
+			
+
+			<div class="row">	
+				<div class="col-md-6">
+					<div class="form-group">					
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-key"></i>
+							</div>
+							
+							<input type="password" class="form-control" name="epassword" id="epassword" data-validate="required" placeholder="Enter strong password" />
+						</div>
+					</div>
+				</div>
+				
+				<div class="col-md-6">						
+					<div class="form-group">						
+						<div class="input-group">
+							<div class="input-group-addon">
+								<i class="entypo-cw"></i>
+							</div>
+							
+							<input type="password" class="form-control" name="epassword" id="epassword" data-validate="required,equalTo[#epassword]" data-message-equal-to="Passwords doesn't match." placeholder="Confirm password" />
+						</div>
+					</div>
+				</div>
+			</div>	
+
+			<div class="form-group">
+				<div class="col-md-6 col-md-offset-3">
+				<a href="javascript:fnClickAddRow();" class="btn btn-primary btn-block btn-login">
+					<i class="entypo-plus"></i>
+					Add Employee
+				</a>
+				<script type='text/javascript'>
+				jQuery(window).load(function()
+				{
+					$("#employees").dataTable({
+						"sPaginationType": "bootstrap",
+						"sDom": "t<'row'<'col-xs-6 col-left'i><'col-xs-6 col-right'p>>",
+						"bStateSave": false,
+						"iDisplayLength": 5,
+						"aoColumns": [
+							null,
+							null,
+							null,
+						]
+					});
+	
+					$(".dataTables_wrapper select").select2({
+						minimumResultsForSearch: -1
+					});
+				});
+				var employee_id;
+				function fnClickAddRow() 
+					{
+						$this=$("#rootwizard-2");
+						if($this.hasClass('validate'))
+			  			{
+							var $valid = $this.valid();						
+							if( ! $valid)
+							{
+								$this.data('validator').focusInvalid();
+								alert("Wrong info!");
+								return;
+							}
+						}
+						console.log($('#role_list').find(":selected").val());
+						$.ajax({
+							beforeSend: function(xhr){ 
+									xhr.setRequestHeader("Authorization", "Basic " + btoa($("input#username").val() + ":" + $("input#password").val())); 
+								},
+							async:false,
+							method:'POST',
+							url:'/api/v1/employee/',
+							contentType: "application/json; charset=utf-8",
+    						dataType: "json",
+    						data:JSON.stringify({
+    							username:$("input#employeename").val(),
+    							password:$("input#epassword").val(),
+    							employee_role:"/api/v1/employeerole/"+$('#role_list').find(":selected").val()+'/',
+    						}),
+    						success:function(response){
+    							$('#employees').dataTable().fnAddData([$('#role_list').find(":selected").text(), $("input#employeename").val(), "<a href='javascript:fnClickdelRow()'' class='btn btn-danger btn-sm btn-icon icon-left'><i class='entypo-cancel'></i>Delete</a>" ]);
+    						},
+    						error:function(response){
+    							alert("Invalid username! Please try another one!")
+    							console.log(response);
+    						},
+						});
+						
+						$("input#employeename").val("");
+						$("input#epassword").val("");	
+					}
+				function fnClickdelRow()
+				{
+					//$('#employees').dataTable().fnDeleteRow(this);
+				}
+				</script>
+				</div>
+			</div>
+			<br/>
+		</div>
+		<div class="tab-pane" id="tab2-4">
+			<center class="form-group">
+				<h1>Welcome to Pitaya Inventory Solution!</h1>
+				<br/>
+				<h5>Some description here!<h5>
+			</center>
+			<br/>
+			<div class="form-group">
+				<div class="col-md-6 col-md-offset-3">
+				<a href="/dashboard" class="btn btn-primary btn-block btn-login">
+					Comfrim And Enter Dashboard
+				</a>
+				</div>
+			</div>
+			<br/>
+		</div>
+		
+		<ul class="pager wizard" >
+			<li class="previous">
+				<a href="#"><i class="entypo-left-open"></i> Previous</a>
+			</li>
+			
+			<li class="next">
+				<a href="#" >Next <i class="entypo-right-open"></i></a>
+			</li>
+		</ul>
+		</div>
+	</div>
+</form><!-- Footer -->
+	</div>
+
+
+	<link rel="stylesheet" href="/site_media/assets/js/selectboxit/jquery.selectBoxIt.css">
+
+	<!-- Bottom Scripts -->
+	<script src="/site_media/assets/js/gsap/main-gsap.js"></script>
+	<script src="/site_media/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js"></script>
+	<script src="/site_media/assets/js/bootstrap.js"></script>
+	<script src="/site_media/assets/js/joinable.js"></script>
+	<script src="/site_media/assets/js/resizeable.js"></script>
+	<script src="/site_media/assets/js/neon-api.js"></script>
+	<script src="/site_media/assets/js/jquery.bootstrap.wizard.min.js"></script>
+	<script src="/site_media/assets/js/jquery.dataTables.min.js"></script>
+	<script src="/site_media/assets/js/datatables/TableTools.min.js"></script>
+	<script src="/site_media/assets/js/dataTables.bootstrap.js"></script>
+	<script src="/site_media/assets/js/datatables/jquery.dataTables.columnFilter.js"></script>
+	<script src="/site_media/assets/js/datatables/lodash.min.js"></script>
+	<script src="/site_media/assets/js/datatables/responsive/js/datatables.responsive.js"></script>
+	<script src="/site_media/assets/js/jquery.validate.min.js"></script>
+	<script type="text/javascript">
+	$(document).ready(function(){
+		$('#username').change(function(){
+			var uname = $('#username').val();
+			$.ajax({
+				type:'post',
+				url:'/api/v1/signup/checkusername/',
+				data:{
+					username:uname,
+				},
+				success: function(response){
+					if(response.success){
+						$('#username_form').addClass("form-group has-error").removeClass("form-group")
+						$('#user_message').html("<i class='entypo-cancel'></i>");
+						$('#username_label').html("<label class='control-label'>Username has been taken! Please choose another one.</label>");
+					}
+					else{
+						$('#user_message').html("<i class='entypo-user'></i>");
+						$('#username_label').html("");
+						$('#username_form').removeClass("form-group has-error").addClass("form-group");
+					}
+				}
+			});
+		});
+		$('#email').change(function(){
+			var uname = $('#email').val();
+			$.ajax({
+				type:'post',
+				url:'/api/v1/signup/checkemail/',
+				data:{
+					email:uname,
+				},
+				success: function(response){
+					if(response.success){
+						$('#email_form').addClass("form-group has-error").removeClass("form-group")
+						$('#email_message').html("<i class='entypo-cancel'></i>");
+						$('#email_label').html("<label class='control-label'>Someone has already registered with this email address! Please choose another one.</label>");
+					}
+					else{
+						$('#email_message').html("<i class='entypo-mail'></i>");
+						$('#email_label').html("");
+						$('#email_form').removeClass("form-group has-error").addClass("form-group");
+					}
+				}
+			});
+		});
+		$('#employeename').change(function(){
+			var uname = $('#employeename').val();
+			console.log(uname);
+			if(uname){
+				$.ajax({
+				type:'post',
+				url:'/api/v1/signup/checkusername/',
+				data:{
+					username:uname,
+				},
+				success: function(response){
+					if(response.success){
+						$('#emloyee_username_form').addClass("form-group has-error").removeClass("form-group")
+						$('#emloyee_user_message').html("<i class='entypo-cancel'></i>");
+						$('#emloyee_username_label').html("<label class='control-label'>Someone has already registered with this email address! Please choose another one.</label>");
+					}
+					else{
+						$('#emloyee_user_message').html("<i class='entypo-mail'></i>");
+						$('#emloyee_username_label').html("");
+						$('#emloyee_username_form').removeClass("form-group has-error").addClass("form-group");
+					}
+				},
+				error: function(response){
+					console.log(response);
+				}
+				});
+			}
+		});
+	});
+	</script>
+	<script src="/site_media/assets/js/select2/select2.min.js"></script>
+	<script src="/site_media/assets/js/jquery.inputmask.bundle.min.js"></script>
+	<script src="/site_media/assets/js/selectboxit/jquery.selectBoxIt.min.js"></script>
+	<script src="/site_media/assets/js/bootstrap-datepicker.js"></script>
+	<script src="/site_media/assets/js/bootstrap-switch.min.js"></script>
+	<script src="/site_media/assets/js/jquery.multi-select.js"></script>
+	<script src="/site_media/assets/js/neon-chat.js"></script>
+	<script src="/site_media/assets/js/neon-custom-signup.js"></script>
+	<script src="/site_media/assets/js/neon-demo.js"></script>
+
+
+</body>
+</html>

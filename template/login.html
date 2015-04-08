@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="description" content="Neon Admin Panel" />
+	<meta name="author" content="" />
+	
+	<title>Pitaya Inventory Solution | Login</title>
+
+	<link rel="stylesheet" href="/site_media/assets/js/jquery-ui/css/no-theme/jquery-ui-1.10.3.custom.min.css">
+	<link rel="stylesheet" href="/site_media/assets/css/font-icons/entypo/css/entypo.css">
+	<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Noto+Sans:400,700,400italic">
+	<link rel="stylesheet" href="/site_media/assets/css/bootstrap.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-core.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-theme.css">
+	<link rel="stylesheet" href="/site_media/assets/css/neon-forms.css">
+	<link rel="stylesheet" href="/site_media/assets/css/custom.css">
+	<link rel="stylesheet" href="/site_media/assets/css/skins/white.css">
+
+	<script type="text/javascript"> 
+	<!-- 
+	(function() { 
+	    if ("-ms-user-select" in document.documentElement.style && navigator.userAgent.match(/IEMobile\/10\.0/)) { 
+	        var msViewportStyle = document.createElement("style"); 
+	        msViewportStyle.appendChild( 
+	            document.createTextNode("@-ms-viewport{width:auto!important}") 
+	        ); 
+	        document.getElementsByTagName("head")[0].appendChild(msViewportStyle); 
+	    } 
+	})(); 
+	//--> 
+	</script>
+	<script src="/site_media/assets/js/jquery-1.11.0.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular.min.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-route.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-resource.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.13/angular-cookies.js"></script>
+	<script src="/site_media/assets/js/ng-tags-input.min.js"></script>
+
+	<script src="/site_media/assets/app/app.js"></script>
+	<script src="/site_media/assets/app/controller.js"></script>
+	<script src="/site_media/assets/app/service.js"></script>
+	<script src="/site_media/assets/js/angular-masonry.min.js"></script>
+	<script src="/site_media/assets/js/masonry.pkgd.min.js"></script>
+
+	<!--[if lt IE 9]><script src="/site_media/assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	
+</head>
+<body class="page-body login-page login-form-fall" data-url="http://neon.dev">
+
+
+<!-- This is needed when you send requests via Ajax --><script type="text/javascript">
+var baseurl = '';
+</script>
+
+<div class="login-container">
+	
+	<div class="login-header login-caret">
+		
+		<div class="login-content">
+			
+			<a href="/login" class="logo">
+				<img src="/site_media/assets/images/logo@lg.png" width="120" alt="" />
+			</a>
+			
+			<p class="description">cloud based inventory management solution</p>
+			
+			<!-- progress bar indicator -->
+			<div class="login-progressbar-indicator">
+				<h3>43%</h3>
+				<span>logging in...</span>
+			</div>
+		</div>
+		
+	</div>
+	
+	<div class="login-progressbar">
+		<div></div>
+	</div>
+	
+	<div class="login-form">
+		
+		<div class="login-content">
+			
+			<div class="form-login-error">
+				<h3>Oops!</h3>
+				<p>Username and password do not match! Please try agian.</p>
+			</div>
+			
+			<form method="post" role="form" id="form_login">
+				
+				<div class="form-group">
+					
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="entypo-user"></i>
+						</div>
+						
+						<input type="text" class="form-control" name="username" id="username" placeholder="Username / E-mail address" autocomplete="off" />
+					</div>
+					
+				</div>
+				
+				<div class="form-group">
+					
+					<div class="input-group">
+						<div class="input-group-addon">
+							<i class="entypo-key"></i>
+						</div>
+						
+						<input type="password" class="form-control" name="password" id="password" placeholder="Password" autocomplete="off" />
+					</div>
+				
+				</div>
+				
+				<div class="form-group">
+					<button type="submit" class="btn btn-primary btn-block btn-login">
+						Login In
+						<i class="entypo-login"></i>
+					</button>
+				</div>
+				
+				
+							
+			</form>
+			
+			
+			<div class="login-bottom-links">
+				
+				<a href="extra-forgot-password.html" class="link">Forgot your password?</a>
+				
+				<br />
+
+				<a href="/signup" class="link">Sign up a new account?</a>
+				
+				<br />
+				
+				<a href="#">ToS</a>  - <a href="#">Privacy Policy</a>
+				
+			</div>
+			
+		</div>
+		
+	</div>
+	
+</div>
+
+
+	<!-- Bottom Scripts -->
+	<script src="/site_media/assets/js/jquery.validate.min.js"></script>
+	<script src="/site_media/assets/js/neon-login.js"></script>
+	<script src="/site_media/assets/js/angular-file-upload-shim.min.js"></script> 
+	<script src="/site_media/assets/js/angular-file-upload.min.js"></script>
+	<script src="/site_media/assets/js/gsap/main-gsap.js"></script>
+	<script src="/site_media/assets/js/jquery-ui/js/jquery-ui-1.10.3.minimal.min.js"></script>
+	<script src="/site_media/assets/js/bootstrap.js"></script>
+	<script src="/site_media/assets/js/joinable.js"></script>
+	<script src="/site_media/assets/js/resizeable.js"></script>
+	<script src="/site_media/assets/js/neon-api.js"></script>
+	<script src="/site_media/assets/js/zurb-responsive-tables/responsive-tables.js"></script>
+	<script src="/site_media/assets/js/neon-custom.js"></script>
+	<script src="/site_media/assets/js/ui-bootstrap-tpls-0.10.0.min.js"></script>
+	<script src="/site_media/assets/js/jvectormap/jquery-jvectormap-1.2.2.min.js"></script>
+	<script src="/site_media/assets/js/jvectormap/jquery-jvectormap-europe-merc-en.js"></script>
+	<script src="/site_media/assets/js/jquery.sparkline.min.js"></script>
+	<script src="/site_media/assets/js/rickshaw/vendor/d3.v3.js"></script>
+	<script src="/site_media/assets/js/rickshaw/rickshaw.min.js"></script>
+	<script src="/site_media/assets/js/raphael-min.js"></script>
+	<script src="/site_media/assets/js/morris.min.js"></script>
+	<script src="/site_media/assets/js/toastr.js"></script>
+
+</body>
+</html>
